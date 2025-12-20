@@ -3,8 +3,9 @@ Highly Portable Developer Environment Setup Script (PowerShell Core)
 Supports Windows 11 and macOS
 
 Features:
-- Installs: Git, Node.js LTS, Python 3, .NET SDK, GitHub CLI, Visual Studio Code, Copilot CLI
-- Installs VS Code extensions: GitHub Copilot, Copilot Chat, Pull Requests, GitHub Theme, Windows AI Studio
+- Interactive tool selection menu
+- Installs: Git, Node.js LTS, Python 3, .NET SDK, GitHub CLI, Visual Studio Code, Cloud tools, and more
+- Installs VS Code extensions: GitHub Copilot, Copilot Chat, Pull Requests, Azure tools, Docker, and more
 - Windows: Uses winget if available, falls back on Chocolatey if not
 - macOS: Uses Homebrew
 - Windows: Installs Oh My Posh, Terminal-Icons PowerShell module, updates PowerShell profile
@@ -25,6 +26,162 @@ $IsMac = $PSVersionTable.Platform -eq 'Unix' -and (
 
 Write-Host "==== Developer Environment Setup ====" -ForegroundColor Cyan
 
+#--- TOOL CONFIGURATION ---
+$ToolConfig = @{
+    'Core' = @{
+        'Git.Git'                    = @{ Enabled = $true; Label = 'Git'; MacPkg = 'git'; Type = 'formula' }
+        'OpenJS.NodeJS.LTS'          = @{ Enabled = $true; Label = 'Node.js (LTS)'; MacPkg = 'node'; Type = 'formula' }
+        'Python.PythonInstallManager' = @{ Enabled = $true; Label = 'Python'; MacPkg = 'python'; Type = 'formula' }
+        'Microsoft.DotNet.SDK.9'     = @{ Enabled = $true; Label = '.NET SDK'; MacPkg = 'dotnet-sdk'; Type = 'formula' }
+        'GitHub.cli'                 = @{ Enabled = $true; Label = 'GitHub CLI'; MacPkg = 'gh'; Type = 'formula' }
+        'Microsoft.VisualStudioCode'  = @{ Enabled = $true; Label = 'Visual Studio Code'; MacPkg = 'visual-studio-code'; Type = 'cask' }
+    }
+    'API & Testing' = @{
+        'Postman.Postman'            = @{ Enabled = $true; Label = 'Postman'; MacPkg = 'postman'; Type = 'cask' }
+        'Insomnia.Insomnia'          = @{ Enabled = $true; Label = 'Insomnia'; MacPkg = 'insomnia'; Type = 'cask' }
+        'Fiddler.FiddlerEverywhere'  = @{ Enabled = $true; Label = 'Fiddler Everywhere'; MacPkg = 'fiddler-everywhere'; Type = 'cask' }
+    }
+    'Cloud & Infrastructure' = @{
+        'Microsoft.AzureCLI'         = @{ Enabled = $true; Label = 'Azure CLI'; MacPkg = 'azure-cli'; Type = 'formula' }
+        'Microsoft.AzureFunctionsCoreTools' = @{ Enabled = $true; Label = 'Azure Functions Core Tools'; MacPkg = 'azure-functions-core-tools'; Type = 'formula' }
+        'Amazon.AWSCLI'              = @{ Enabled = $true; Label = 'AWS CLI'; MacPkg = 'awscli'; Type = 'formula' }
+        'Google.CloudSDK'            = @{ Enabled = $true; Label = 'Google Cloud SDK'; MacPkg = 'google-cloud-sdk'; Type = 'formula' }
+        'Hashicorp.Terraform'        = @{ Enabled = $true; Label = 'Terraform'; MacPkg = 'terraform'; Type = 'formula' }
+        'Kubernetes.kubectl'         = @{ Enabled = $true; Label = 'Kubectl'; MacPkg = 'kubectl'; Type = 'formula' }
+    }
+    'Containers & Databases' = @{
+        'Docker.DockerDesktop'       = @{ Enabled = $true; Label = 'Docker Desktop'; MacPkg = 'docker'; Type = 'cask' }
+        'Microsoft.AzureDataStudio'  = @{ Enabled = $true; Label = 'Azure Data Studio'; MacPkg = 'azure-data-studio'; Type = 'cask' }
+    }
+    'Productivity' = @{
+        'Microsoft.PowerToys'        = @{ Enabled = $true; Label = 'PowerToys (Windows only)'; MacPkg = $null; Type = 'windows-only' }
+        'Rectangle'                  = @{ Enabled = $true; Label = 'Rectangle (macOS only)'; MacPkg = 'rectangle'; Type = 'cask'; WinPkg = $null }
+    }
+}
+
+$VSCodeExtensions = @{
+    'GitHub.copilot'                        = @{ Enabled = $true; Label = 'GitHub Copilot' }
+    'GitHub.copilot-chat'                   = @{ Enabled = $true; Label = 'GitHub Copilot Chat' }
+    'GitHub.github-vscode-theme'            = @{ Enabled = $true; Label = 'GitHub Theme' }
+    'GitHub.vscode-pull-request-github'     = @{ Enabled = $true; Label = 'GitHub Pull Requests' }
+    'ms-windows-ai-studio.windows-ai-studio' = @{ Enabled = $true; Label = 'Windows AI Studio' }
+    'humao.rest-client'                     = @{ Enabled = $true; Label = 'REST Client' }
+    'ms-azuretools.vscode-azurefunctions'   = @{ Enabled = $true; Label = 'Azure Functions' }
+    'ms-vscode.azure-account'               = @{ Enabled = $true; Label = 'Azure Account' }
+    'dbaeumer.vscode-eslint'                = @{ Enabled = $true; Label = 'ESLint' }
+    'esbenp.prettier-vscode'                = @{ Enabled = $true; Label = 'Prettier' }
+    'ms-vscode-remote.remote-containers'    = @{ Enabled = $true; Label = 'Remote Containers' }
+    'ms-azuretools.vscode-docker'           = @{ Enabled = $true; Label = 'Docker' }
+}
+
+#--- INTERACTIVE MENU ---
+function Show-InteractiveMenu {
+    $continue = $true
+    
+    while ($continue) {
+        Clear-Host
+        Write-Host "==== Developer Environment Setup - Tool Selection ====" -ForegroundColor Cyan
+        Write-Host ""
+        
+        # Display Tools by Category
+        $index = 1
+        $menuMap = @{}
+        
+        foreach ($category in $ToolConfig.Keys | Sort-Object) {
+            Write-Host "[$category]" -ForegroundColor Yellow
+            foreach ($winPkgId in $ToolConfig[$category].Keys) {
+                $tool = $ToolConfig[$category][$winPkgId]
+                
+                # Skip platform-specific tools
+                if ($IsWin -and $tool.MacPkg -eq $null -and $category -eq 'Productivity' -and $winPkgId -ne 'Microsoft.PowerToys') { continue }
+                if ($IsMac -and $tool.WinPkg -eq $null -and $winPkgId -eq 'Microsoft.PowerToys') { continue }
+                
+                $status = if ($tool.Enabled) { "[X]" } else { "[ ]" }
+                $color = if ($tool.Enabled) { "Green" } else { "Gray" }
+                Write-Host "  $index. $status $($tool.Label)" -ForegroundColor $color
+                $menuMap[$index] = @{ Category = $category; Key = $winPkgId }
+                $index++
+            }
+            Write-Host ""
+        }
+        
+        # Display VS Code Extensions
+        Write-Host "[VS Code Extensions]" -ForegroundColor Yellow
+        $extStartIndex = $index
+        foreach ($extId in $VSCodeExtensions.Keys | Sort-Object) {
+            $ext = $VSCodeExtensions[$extId]
+            $status = if ($ext.Enabled) { "[X]" } else { "[ ]" }
+            $color = if ($ext.Enabled) { "Green" } else { "Gray" }
+            Write-Host "  $index. $status $($ext.Label)" -ForegroundColor $color
+            $menuMap[$index] = @{ Category = 'Extensions'; Key = $extId }
+            $index++
+        }
+        
+        Write-Host ""
+        Write-Host "Commands:" -ForegroundColor Cyan
+        Write-Host "  Enter number to toggle" -ForegroundColor White
+        Write-Host "  'all' - Select all" -ForegroundColor White
+        Write-Host "  'none' - Deselect all" -ForegroundColor White
+        Write-Host "  'continue' or 'c' - Proceed with installation" -ForegroundColor White
+        Write-Host "  'quit' or 'q' - Exit without installing" -ForegroundColor White
+        Write-Host ""
+        
+        $choice = Read-Host "Enter your choice"
+        
+        switch -Regex ($choice) {
+            '^(continue|c)$' {
+                $continue = $false
+            }
+            '^(quit|q)$' {
+                Write-Host "Exiting without installation." -ForegroundColor Yellow
+                exit 0
+            }
+            '^all$' {
+                foreach ($category in $ToolConfig.Keys) {
+                    foreach ($key in $ToolConfig[$category].Keys) {
+                        $ToolConfig[$category][$key].Enabled = $true
+                    }
+                }
+                foreach ($key in $VSCodeExtensions.Keys) {
+                    $VSCodeExtensions[$key].Enabled = $true
+                }
+            }
+            '^none$' {
+                foreach ($category in $ToolConfig.Keys) {
+                    foreach ($key in $ToolConfig[$category].Keys) {
+                        $ToolConfig[$category][$key].Enabled = $false
+                    }
+                }
+                foreach ($key in $VSCodeExtensions.Keys) {
+                    $VSCodeExtensions[$key].Enabled = $false
+                }
+            }
+            '^\d+$' {
+                $num = [int]$choice
+                if ($menuMap.ContainsKey($num)) {
+                    $item = $menuMap[$num]
+                    if ($item.Category -eq 'Extensions') {
+                        $VSCodeExtensions[$item.Key].Enabled = -not $VSCodeExtensions[$item.Key].Enabled
+                    } else {
+                        $ToolConfig[$item.Category][$item.Key].Enabled = -not $ToolConfig[$item.Category][$item.Key].Enabled
+                    }
+                } else {
+                    Write-Host "Invalid selection" -ForegroundColor Red
+                    Start-Sleep -Seconds 1
+                }
+            }
+            default {
+                Write-Host "Invalid input" -ForegroundColor Red
+                Start-Sleep -Seconds 1
+            }
+        }
+    }
+    
+    Clear-Host
+    Write-Host "==== Starting Installation ====" -ForegroundColor Cyan
+    Write-Host ""
+}
+
 #--- MAIN FUNCTIONS ---
 function Install-Windows {
     Write-Host "Detected OS: Windows" -ForegroundColor Green
@@ -33,13 +190,50 @@ function Install-Windows {
     $hasWinget = $false
     try { if (Get-Command winget -ErrorAction Stop) { $hasWinget = $true } } catch {}
 
-    $winPackages = @{
-      'Git.Git'                    = 'git'
-      'OpenJS.NodeJS.LTS'          = 'nodejs-lts'
-      'Python.PythonInstallManager' = 'python'
-      'Microsoft.DotNet.SDK.9'     = 'dotnet-sdk'
-      'GitHub.cli'                 = 'gh'
-      'Microsoft.VisualStudioCode'  = 'vscode'
+    if ($hasWinget) {
+        Write-Host "Using winget for installs." -ForegroundColor Yellow
+
+        foreach ($category in $ToolConfig.Keys) {
+            foreach ($wingetId in $ToolConfig[$category].Keys) {
+                $tool = $ToolConfig[$category][$wingetId]
+                
+                # Skip if not enabled or macOS-only
+                if (-not $tool.Enabled) { continue }
+                if ($wingetId -eq 'Rectangle') { continue }
+                
+                Write-Host "Checking if $($tool.Label) ($wingetId) is installed..." -ForegroundColor Cyan
+                try {
+                    $installed = winget list --exact --id $wingetId | Out-String
+                    if ($installed -notmatch $wingetId) {
+                        Write-Host "→ Installing $($tool.Label) ($wingetId)..." -ForegroundColor Yellow
+                        $process = Start-Process -FilePath "winget" -ArgumentList @("install","--id",$wingetId,"--source","winget","--accept-source-agreements","--accept-package-agreements","-e","--silent") -NoNewWindow -PassThru -Wait
+                        if ($process.ExitCode -ne 0) {
+                            Write-Host "[!] $($tool.Label) ($wingetId) installation failed (exit code $($process.ExitCode))." -ForegroundColor Red
+                        } else {
+                            Write-Host "✓ $($tool.Label) ($wingetId) installed successfully." -ForegroundColor Green
+                        }
+                    } else {
+                        Write-Host "$($tool.Label) is already installed." -ForegroundColor Gray
+                    }
+                } catch {
+                    Write-Host "[!] An error occurred checking or installing $($tool.Label) ($wingetId): $_" -ForegroundColor Red
+                }
+            }
+        }
+        Write-Host "All winget package install attempts completed." -ForegroundColor Green
+    } else {
+        Write-Host "winget not found. Falling back to Chocolatey..." -ForegroundColor Yellow
+      'Microsoft.AzureCLI'         = 'azure-cli'
+      'Microsoft.AzureFunctionsCoreTools' = 'azure-functions-core-tools'
+      'Docker.DockerDesktop'       = 'docker-desktop'
+      'Insomnia.Insomnia'          = 'insomnia'
+      'Fiddler.FiddlerEverywhere'  = 'fiddler-everywhere'
+      'Microsoft.AzureDataStudio'  = 'azure-data-studio'
+      'Hashicorp.Terraform'        = 'terraform'
+      'Kubernetes.kubectl'         = 'kubectl'
+      'Microsoft.PowerToys'        = 'powertoys'
+      'Amazon.AWSCLI'              = 'aws-cli'
+      'Google.CloudSDK'            = 'google-cloud-sdk'
     }
 
     if ($hasWinget) {
@@ -74,7 +268,8 @@ function Install-Windows {
         Write-Host "All winget package install attempts completed." -ForegroundColor Green
     } else {
         Write-Host "winget not found. Falling back to Chocolatey..." -ForegroundColor Yellow
-        # ...rest of chocolatey logic unchanged...
+        # Chocolatey not implemented with interactive menu - please use winget
+        Write-Host "Please install winget or manually install tools." -ForegroundColor Red
     }
 
     Install-VSCodeExtensions
@@ -91,21 +286,32 @@ function Install-MacOS {
         eval "$(/opt/homebrew/bin/brew shellenv)"
     }
 
-    $macPackages = @('git', 'node', 'python', 'dotnet-sdk', 'gh', 'visual-studio-code')
-    foreach ($pkg in $macPackages) {
-        if ($pkg -eq 'visual-studio-code') {
-            if (-not (brew list --cask $pkg 2>&1 | Select-String $pkg)) {
-                Write-Host "Installing $pkg (cask)..." -ForegroundColor Yellow
-                brew install --cask $pkg
-            } else {
-                Write-Host "$pkg already installed." -ForegroundColor Gray
-            }
-        } else {
-            if (-not (brew list $pkg 2>&1 | Select-String $pkg)) {
-                Write-Host "Installing $pkg..." -ForegroundColor Yellow
-                brew install $pkg
-            } else {
-                Write-Host "$pkg already installed." -ForegroundColor Gray
+    # Install formula packages
+    foreach ($category in $ToolConfig.Keys) {
+        foreach ($winPkgId in $ToolConfig[$category].Keys) {
+            $tool = $ToolConfig[$category][$winPkgId]
+            
+            # Skip if not enabled, Windows-only, or not a formula
+            if (-not $tool.Enabled) { continue }
+            if ($winPkgId -eq 'Microsoft.PowerToys') { continue }
+            if (-not $tool.MacPkg) { continue }
+            
+            $pkg = $tool.MacPkg
+            
+            if ($tool.Type -eq 'formula') {
+                if (-not (brew list $pkg 2>&1 | Select-String $pkg)) {
+                    Write-Host "Installing $($tool.Label)..." -ForegroundColor Yellow
+                    brew install $pkg
+                } else {
+                    Write-Host "$($tool.Label) already installed." -ForegroundColor Gray
+                }
+            } elseif ($tool.Type -eq 'cask') {
+                if (-not (brew list --cask $pkg 2>&1 | Select-String $pkg)) {
+                    Write-Host "Installing $($tool.Label) (cask)..." -ForegroundColor Yellow
+                    brew install --cask $pkg
+                } else {
+                    Write-Host "$($tool.Label) already installed." -ForegroundColor Gray
+                }
             }
         }
     }
@@ -121,15 +327,13 @@ function Install-VSCodeExtensions {
         Write-Host "VS Code CLI not found, skipping extension install." -ForegroundColor Red
         return
     }
-    $extensions = @(
-        "GitHub.copilot",
-        "GitHub.copilot-chat",
-        "GitHub.github-vscode-theme",
-        "GitHub.vscode-pull-request-github",
-        "ms-windows-ai-studio.windows-ai-studio"
-    )
-    foreach ($ext in $extensions) {
-        & $vsCodeCmd --install-extension $ext --force
+    
+    foreach ($extId in $VSCodeExtensions.Keys) {
+        $ext = $VSCodeExtensions[$extId]
+        if ($ext.Enabled) {
+            Write-Host "Installing $($ext.Label)..." -ForegroundColor Yellow
+            & $vsCodeCmd --install-extension $extId --force
+        }
     }
     Write-Host "VS Code extensions installed." -ForegroundColor Green
 }
@@ -196,6 +400,8 @@ function Install-OhMyZsh-MacOS {
 }
 
 #--- DISPATCHER ---
+Show-InteractiveMenu
+
 if ($IsWin) {
     Install-Windows
 } elseif ($IsMac) {

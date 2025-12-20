@@ -1,6 +1,14 @@
 # Portable Developer Environment Setup Script
 
-This script provides a **portable, easy-to-run, cross-platform setup** for developers on **Windows 11** and **macOS**, with sensible defaults and fallback options.
+This script provides a **portable, easy-to-run, cross-platform setup** for developers on **Windows 11** and **macOS**, with an **interactive menu** to select tools and sensible defaults.
+
+## ✨ Features
+
+**Interactive Tool Selection:**
+- Choose which tools and extensions to install
+- Toggle selections with simple number inputs
+- Select all, deselect all, or customize your setup
+- No unwanted software installed!
 
 **Tools installed:**
 - Git
@@ -9,6 +17,23 @@ This script provides a **portable, easy-to-run, cross-platform setup** for devel
 - .NET SDK
 - GitHub CLI (`gh`)
 - Visual Studio Code
+- Postman (API testing)
+- Azure CLI
+- Azure Functions Core Tools
+- Docker Desktop
+- Insomnia (API testing)
+- Fiddler Everywhere (network debugging)
+- Azure Data Studio (database management)
+- Terraform (Infrastructure as Code)
+- Kubectl (Kubernetes CLI)
+- PowerToys (Windows only - productivity utilities)
+- Rectangle (macOS only - window management)
+- AWS CLI (Amazon Web Services)
+- Google Cloud SDK (Google Cloud Platform)
+
+---
+
+## How Does It Work?
 
 **VS Code Extensions:**
 - GitHub Copilot
@@ -16,6 +41,13 @@ This script provides a **portable, easy-to-run, cross-platform setup** for devel
 - GitHub Pull Requests & Issues
 - GitHub Theme
 - Windows AI Studio
+- REST Client
+- Azure Functions
+- Azure Account
+- ESLint
+- Prettier
+- Remote Containers
+- Docker
 
 **Additional features:**
 - GitHub Copilot CLI (npm global tool)
@@ -30,9 +62,18 @@ This script provides a **portable, easy-to-run, cross-platform setup** for devel
 ```powershell
 pwsh -c "iwr -useb 'https://raw.githubusercontent.com/chris97420/dev-setup/refs/heads/main/setup-dev-env.ps1' | iex"
 ```
+
+The script will display an interactive menu where you can:
+- **Enter a number** to toggle that tool on/off
+- Type **'all'** to select everything
+- Type **'none'** to deselect everything  
+- Type **'continue'** or **'c'** to start installation
+- Type **'quit'** or **'q'** to exit without changes
 ---
 
-## How Does It Work?
+## 📦 Available Tools
+
+The interactive menu organizes tools into categories:
 
 - **Windows 11:** Installs/updates tools first with [winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/), otherwise falls back on [Chocolatey](https://chocolatey.org/).
 - **macOS:** Uses [Homebrew](https://brew.sh/).
