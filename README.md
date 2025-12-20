@@ -64,11 +64,12 @@ pwsh -c "iwr -useb 'https://raw.githubusercontent.com/chris97420/dev-setup/refs/
 ```
 
 The script will display an interactive menu where you can:
-- **Enter a number** to toggle that tool on/off
-- Type **'all'** to select everything
-- Type **'none'** to deselect everything  
-- Type **'continue'** or **'c'** to start installation
-- Type **'quit'** or **'q'** to exit without changes
+- **↑/↓ Arrow keys** or **k/j** to navigate
+- **Spacebar** to toggle tools on/off
+- **a** to select all
+- **n** to deselect all  
+- **Enter** to start installation
+- **q** or **Esc** to exit
 ---
 
 ## 📦 Available Tools

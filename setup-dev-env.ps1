@@ -76,107 +76,200 @@ $VSCodeExtensions = @{
 
 #--- INTERACTIVE MENU ---
 function Show-InteractiveMenu {
-    $continue = $true
+    # Build menu items list
+    $menuItems = @()
     
-    while ($continue) {
-        Clear-Host
-        Write-Host "==== Developer Environment Setup - Tool Selection ====" -ForegroundColor Cyan
-        Write-Host ""
-        
-        # Display Tools by Category
-        $index = 1
-        $menuMap = @{}
-        
-        foreach ($category in $ToolConfig.Keys | Sort-Object) {
-            Write-Host "[$category]" -ForegroundColor Yellow
-            foreach ($winPkgId in $ToolConfig[$category].Keys) {
-                $tool = $ToolConfig[$category][$winPkgId]
-                
-                # Skip platform-specific tools
-                if ($IsWin -and $tool.MacPkg -eq $null -and $category -eq 'Productivity' -and $winPkgId -ne 'Microsoft.PowerToys') { continue }
-                if ($IsMac -and $tool.WinPkg -eq $null -and $winPkgId -eq 'Microsoft.PowerToys') { continue }
-                
-                $status = if ($tool.Enabled) { "[X]" } else { "[ ]" }
-                $color = if ($tool.Enabled) { "Green" } else { "Gray" }
-                Write-Host "  $index. $status $($tool.Label)" -ForegroundColor $color
-                $menuMap[$index] = @{ Category = $category; Key = $winPkgId }
-                $index++
-            }
-            Write-Host ""
-        }
-        
-        # Display VS Code Extensions
-        Write-Host "[VS Code Extensions]" -ForegroundColor Yellow
-        $extStartIndex = $index
-        foreach ($extId in $VSCodeExtensions.Keys | Sort-Object) {
-            $ext = $VSCodeExtensions[$extId]
-            $status = if ($ext.Enabled) { "[X]" } else { "[ ]" }
-            $color = if ($ext.Enabled) { "Green" } else { "Gray" }
-            Write-Host "  $index. $status $($ext.Label)" -ForegroundColor $color
-            $menuMap[$index] = @{ Category = 'Extensions'; Key = $extId }
-            $index++
-        }
-        
-        Write-Host ""
-        Write-Host "Commands:" -ForegroundColor Cyan
-        Write-Host "  Enter number to toggle" -ForegroundColor White
-        Write-Host "  'all' - Select all" -ForegroundColor White
-        Write-Host "  'none' - Deselect all" -ForegroundColor White
-        Write-Host "  'continue' or 'c' - Proceed with installation" -ForegroundColor White
-        Write-Host "  'quit' or 'q' - Exit without installing" -ForegroundColor White
-        Write-Host ""
-        
-        $choice = Read-Host "Enter your choice"
-        
-        switch -Regex ($choice) {
-            '^(continue|c)$' {
-                $continue = $false
-            }
-            '^(quit|q)$' {
-                Write-Host "Exiting without installation." -ForegroundColor Yellow
-                exit 0
-            }
-            '^all$' {
-                foreach ($category in $ToolConfig.Keys) {
-                    foreach ($key in $ToolConfig[$category].Keys) {
-                        $ToolConfig[$category][$key].Enabled = $true
-                    }
-                }
-                foreach ($key in $VSCodeExtensions.Keys) {
-                    $VSCodeExtensions[$key].Enabled = $true
-                }
-            }
-            '^none$' {
-                foreach ($category in $ToolConfig.Keys) {
-                    foreach ($key in $ToolConfig[$category].Keys) {
-                        $ToolConfig[$category][$key].Enabled = $false
-                    }
-                }
-                foreach ($key in $VSCodeExtensions.Keys) {
-                    $VSCodeExtensions[$key].Enabled = $false
-                }
-            }
-            '^\d+$' {
-                $num = [int]$choice
-                if ($menuMap.ContainsKey($num)) {
-                    $item = $menuMap[$num]
-                    if ($item.Category -eq 'Extensions') {
-                        $VSCodeExtensions[$item.Key].Enabled = -not $VSCodeExtensions[$item.Key].Enabled
-                    } else {
-                        $ToolConfig[$item.Category][$item.Key].Enabled = -not $ToolConfig[$item.Category][$item.Key].Enabled
-                    }
-                } else {
-                    Write-Host "Invalid selection" -ForegroundColor Red
-                    Start-Sleep -Seconds 1
-                }
-            }
-            default {
-                Write-Host "Invalid input" -ForegroundColor Red
-                Start-Sleep -Seconds 1
+    foreach ($category in $ToolConfig.Keys | Sort-Object) {
+        foreach ($winPkgId in $ToolConfig[$category].Keys) {
+            $tool = $ToolConfig[$category][$winPkgId]
+            
+            # Skip platform-specific tools
+            if ($IsWin -and $tool.MacPkg -eq $null -and $category -eq 'Productivity' -and $winPkgId -ne 'Microsoft.PowerToys') { continue }
+            if ($IsMac -and $tool.WinPkg -eq $null -and $winPkgId -eq 'Microsoft.PowerToys') { continue }
+            
+            $menuItems += @{
+                Category = $category
+                Key = $winPkgId
+                Label = $tool.Label
+                Type = 'Tool'
             }
         }
     }
     
+    foreach ($extId in $VSCodeExtensions.Keys | Sort-Object) {
+        $ext = $VSCodeExtensions[$extId]
+        $menuItems += @{
+            Category = 'Extensions'
+            Key = $extId
+            Label = $ext.Label
+            Type = 'Extension'
+        }
+    }
+    
+    $selectedIndex = 0
+    $continue = $true
+    
+    # Hide cursor for cleaner display
+    [Console]::CursorVisible = $false
+    
+    function Render-Menu {
+        param($selectedIdx)
+        
+        # Move cursor to top and clear
+        [Console]::SetCursorPosition(0, 0)
+        
+        # Build output as a string array for atomic write
+        $output = @()
+        $output += "==== Developer Environment Setup - Tool Selection ===="
+        $output += ""
+        
+        # Group items by category
+        $currentCategory = ""
+        for ($i = 0; $i -lt $menuItems.Count; $i++) {
+            $item = $menuItems[$i]
+            
+            # Show category header if changed
+            if ($item.Category -ne $currentCategory) {
+                if ($i -gt 0) { $output += "" }
+                $output += "[$($item.Category)]"
+                $currentCategory = $item.Category
+            }
+            
+            # Get enabled status
+            $isEnabled = if ($item.Type -eq 'Extension') {
+                $VSCodeExtensions[$item.Key].Enabled
+            } else {
+                $ToolConfig[$item.Category][$item.Key].Enabled
+            }
+            
+            $status = if ($isEnabled) { "[X]" } else { "[ ]" }
+            $cursor = if ($i -eq $selectedIdx) { ">" } else { " " }
+            $line = "$cursor $status $($item.Label)"
+            
+            # Pad line to clear any previous content
+            $line = $line.PadRight([Console]::WindowWidth - 1)
+            $output += $line
+        }
+        
+        $output += ""
+        $output += "Controls:"
+        $output += "  ↑/↓ or k/j - Navigate"
+        $output += "  Space - Toggle selection"
+        $output += "  a - Select all  |  n - Deselect all"
+        $output += "  Enter - Continue with installation"
+        $output += "  q or Esc - Quit"
+        $output += ""
+        
+        # Write entire screen at once with colors
+        [Console]::SetCursorPosition(0, 0)
+        $lineNum = 0
+        foreach ($line in $output) {
+            if ($lineNum -eq 0) {
+                Write-Host $line -ForegroundColor Cyan
+            } elseif ($line -match '^\[.*\]$') {
+                Write-Host $line -ForegroundColor Yellow
+            } elseif ($line -match '^Controls:') {
+                Write-Host $line -ForegroundColor Cyan
+            } elseif ($line -match '^>' -and $line -notmatch '^\s') {
+                Write-Host $line -ForegroundColor Cyan
+            } elseif ($line -match '^\s+\[X\]') {
+                Write-Host $line -ForegroundColor Green
+            } elseif ($line -match '^\s+\[\s\]') {
+                Write-Host $line -ForegroundColor Gray
+            } else {
+                Write-Host $line -ForegroundColor White
+            }
+            $lineNum++
+        }
+    }
+    
+    # Initial render
+    Clear-Host
+    Render-Menu -selectedIdx $selectedIndex
+    
+    while ($continue) {
+        # Read key
+        $key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        $needsRedraw = $false
+        
+        switch ($key.VirtualKeyCode) {
+            38 { # Up Arrow
+                $selectedIndex = if ($selectedIndex -gt 0) { $selectedIndex - 1 } else { $menuItems.Count - 1 }
+                $needsRedraw = $true
+            }
+            40 { # Down Arrow
+                $selectedIndex = if ($selectedIndex -lt ($menuItems.Count - 1)) { $selectedIndex + 1 } else { 0 }
+                $needsRedraw = $true
+            }
+            32 { # Spacebar
+                $item = $menuItems[$selectedIndex]
+                if ($item.Type -eq 'Extension') {
+                    $VSCodeExtensions[$item.Key].Enabled = -not $VSCodeExtensions[$item.Key].Enabled
+                } else {
+                    $ToolConfig[$item.Category][$item.Key].Enabled = -not $ToolConfig[$item.Category][$item.Key].Enabled
+                }
+                $needsRedraw = $true
+            }
+            13 { # Enter
+                $continue = $false
+            }
+            27 { # Escape
+                [Console]::CursorVisible = $true
+                Clear-Host
+                Write-Host "Exiting without installation." -ForegroundColor Yellow
+                exit 0
+            }
+        }
+        
+        # Handle letter keys
+        if ($key.Character -match '[a-zA-Z]') {
+            switch ($key.Character.ToString().ToLower()) {
+                'q' {
+                    [Console]::CursorVisible = $true
+                    Clear-Host
+                    Write-Host "Exiting without installation." -ForegroundColor Yellow
+                    exit 0
+                }
+                'a' {
+                    foreach ($category in $ToolConfig.Keys) {
+                        foreach ($pkgKey in $ToolConfig[$category].Keys) {
+                            $ToolConfig[$category][$pkgKey].Enabled = $true
+                        }
+                    }
+                    foreach ($extKey in $VSCodeExtensions.Keys) {
+                        $VSCodeExtensions[$extKey].Enabled = $true
+                    }
+                    $needsRedraw = $true
+                }
+                'n' {
+                    foreach ($category in $ToolConfig.Keys) {
+                        foreach ($pkgKey in $ToolConfig[$category].Keys) {
+                            $ToolConfig[$category][$pkgKey].Enabled = $false
+                        }
+                    }
+                    foreach ($extKey in $VSCodeExtensions.Keys) {
+                        $VSCodeExtensions[$extKey].Enabled = $false
+                    }
+                    $needsRedraw = $true
+                }
+                'k' { # Vim-style up
+                    $selectedIndex = if ($selectedIndex -gt 0) { $selectedIndex - 1 } else { $menuItems.Count - 1 }
+                    $needsRedraw = $true
+                }
+                'j' { # Vim-style down
+                    $selectedIndex = if ($selectedIndex -lt ($menuItems.Count - 1)) { $selectedIndex + 1 } else { 0 }
+                    $needsRedraw = $true
+                }
+            }
+        }
+        
+        if ($needsRedraw) {
+            Render-Menu -selectedIdx $selectedIndex
+        }
+    }
+    
+    # Restore cursor
+    [Console]::CursorVisible = $true
     Clear-Host
     Write-Host "==== Starting Installation ====" -ForegroundColor Cyan
     Write-Host ""
@@ -218,51 +311,6 @@ function Install-Windows {
                 } catch {
                     Write-Host "[!] An error occurred checking or installing $($tool.Label) ($wingetId): $_" -ForegroundColor Red
                 }
-            }
-        }
-        Write-Host "All winget package install attempts completed." -ForegroundColor Green
-    } else {
-        Write-Host "winget not found. Falling back to Chocolatey..." -ForegroundColor Yellow
-      'Microsoft.AzureCLI'         = 'azure-cli'
-      'Microsoft.AzureFunctionsCoreTools' = 'azure-functions-core-tools'
-      'Docker.DockerDesktop'       = 'docker-desktop'
-      'Insomnia.Insomnia'          = 'insomnia'
-      'Fiddler.FiddlerEverywhere'  = 'fiddler-everywhere'
-      'Microsoft.AzureDataStudio'  = 'azure-data-studio'
-      'Hashicorp.Terraform'        = 'terraform'
-      'Kubernetes.kubectl'         = 'kubectl'
-      'Microsoft.PowerToys'        = 'powertoys'
-      'Amazon.AWSCLI'              = 'aws-cli'
-      'Google.CloudSDK'            = 'google-cloud-sdk'
-    }
-
-    if ($hasWinget) {
-        Write-Host "Using winget for installs." -ForegroundColor Yellow
-
-        foreach ($wingetId in $winPackages.Keys) {
-            $pkgLabel = $winPackages[$wingetId]
-            Write-Host "Checking if $pkgLabel ($wingetId) is installed..." -ForegroundColor Cyan
-            try {
-                $installed = winget list --exact --id $wingetId | Out-String
-                if ($installed -notmatch $wingetId) {
-                    Write-Host "→ Installing $pkgLabel ($wingetId)..." -ForegroundColor Yellow
-                    $wingetCmd = "winget install --id `"$wingetId`" --source winget --accept-source-agreements --accept-package-agreements -e --silent"
-                    Write-Host "Running: $wingetCmd" -ForegroundColor DarkGray
-
-                    # Start process and wait up to 10 minutes, dump output for logs/troubleshooting
-                    $process = Start-Process -FilePath "winget" -ArgumentList @("install","--id",$wingetId,"--source","winget","--accept-source-agreements","--accept-package-agreements","-e","--silent") -NoNewWindow -PassThru -Wait
-                    if ($process.ExitCode -ne 0) {
-                        Write-Host "[!] $pkgLabel ($wingetId) installation failed (exit code $($process.ExitCode))." -ForegroundColor Red
-                        Write-Host "   Troubleshooting: Is Microsoft Store installed/enabled? Is your user profile corrupted? Try running 'winget install --id $wingetId' manually." -ForegroundColor Red
-                    } else {
-                        Write-Host "✓ $pkgLabel ($wingetId) installed successfully." -ForegroundColor Green
-                    }
-                } else {
-                    Write-Host "$pkgLabel is already installed." -ForegroundColor Gray
-                }
-            } catch {
-                Write-Host "[!] An error occurred checking or installing $pkgLabel ($wingetId): $_" -ForegroundColor Red
-                Write-Host "   Try 'winget install --id $wingetId' manually, or check that 'winget' is working in your terminal." -ForegroundColor Yellow
             }
         }
         Write-Host "All winget package install attempts completed." -ForegroundColor Green
