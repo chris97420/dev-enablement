@@ -28,7 +28,7 @@ This script provides a **portable, easy-to-run, cross-platform setup** for devel
 
 **Run in PowerShell Core (`pwsh`) on Windows 11 or macOS.**
 ```powershell
-pwsh -c "iwr -useb 'https://gist.githubusercontent.com/chris97420/54c3aed8398c9b0644c31473a23368ad/raw/0525c93e02c12fd88a5c1435249304bb2db9360f/setup-dev-env.ps1' | iex"
+pwsh -c "iwr -useb 'https://raw.githubusercontent.com/chris97420/dev-setup/refs/heads/main/setup-dev-env.ps1' | iex"
 ```
 ---
 
