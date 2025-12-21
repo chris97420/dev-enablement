@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Highly Portable Developer Environment Setup Script (Python)
-Supports Windows 11 and macOS
+Supports Windows 11, macOS, and Linux (Debian/Ubuntu)
 
 Features:
 - Beautiful interactive menu with arrow key navigation
@@ -9,10 +9,9 @@ Features:
 - Installs VS Code extensions: GitHub Copilot, Copilot Chat, Pull Requests, Azure tools, Docker, and more
 - Windows: Uses winget if available
 - macOS: Uses Homebrew
+- Linux: Uses apt/snap package managers
 - Windows: Installs Oh My Posh, Terminal-Icons PowerShell module
-- macOS: Installs Oh My Zsh, FiraCode Nerd Font
-
-USAGE:
+- macOS/Linux: Installs Oh My Zsh, FiraCode Nerd Font
 python3 setup-dev-env.py
 """
 
@@ -35,6 +34,7 @@ except ImportError:
 # Platform detection
 IS_WINDOWS = platform.system() == "Windows"
 IS_MACOS = platform.system() == "Darwin"
+IS_LINUX = platform.system() == "Linux"
 
 # Developer Personas
 PERSONAS = {
@@ -125,45 +125,45 @@ PERSONAS = {
 # Tool configuration
 TOOL_CONFIG = {
     "Core": {
-        "Git.Git": {"label": "Git", "mac_pkg": "git", "type": "formula"},
-        "OpenJS.NodeJS.LTS": {"label": "Node.js (LTS)", "mac_pkg": "node", "type": "formula"},
-        "Python.Python.3.12": {"label": "Python 3", "mac_pkg": "python@3.12", "type": "formula"},
-        "Microsoft.DotNet.SDK.9": {"label": ".NET SDK", "mac_pkg": "dotnet-sdk", "type": "formula"},
-        "GitHub.cli": {"label": "GitHub CLI", "mac_pkg": "gh", "type": "formula"},
-        "Microsoft.VisualStudioCode": {"label": "Visual Studio Code", "mac_pkg": "visual-studio-code", "type": "cask"},
+        "Git.Git": {"label": "Git", "mac_pkg": "git", "type": "formula", "linux_pkg": "git"},
+        "OpenJS.NodeJS.LTS": {"label": "Node.js (LTS)", "mac_pkg": "node", "type": "formula", "linux_pkg": "nodejs npm"},
+        "Python.Python.3.12": {"label": "Python 3", "mac_pkg": "python@3.12", "type": "formula", "linux_pkg": "python3 python3-pip"},
+        "Microsoft.DotNet.SDK.9": {"label": ".NET SDK", "mac_pkg": "dotnet-sdk", "type": "formula", "linux_pkg": "dotnet-sdk-9.0", "linux_source": "microsoft"},
+        "GitHub.cli": {"label": "GitHub CLI", "mac_pkg": "gh", "type": "formula", "linux_pkg": "gh"},
+        "Microsoft.VisualStudioCode": {"label": "Visual Studio Code", "mac_pkg": "visual-studio-code", "type": "cask", "linux_pkg": "code"},
     },
     "API & Testing": {
-        "Postman.Postman": {"label": "Postman", "mac_pkg": "postman", "type": "cask"},
-        "Insomnia.Insomnia": {"label": "Insomnia", "mac_pkg": "insomnia", "type": "cask"},
-        "Telerik.Fiddler.Classic": {"label": "Fiddler", "mac_pkg": "fiddler-everywhere", "type": "cask"},
+        "Postman.Postman": {"label": "Postman", "mac_pkg": "postman", "type": "cask", "linux_pkg": "postman", "linux_snap": True},
+        "Insomnia.Insomnia": {"label": "Insomnia", "mac_pkg": "insomnia", "type": "cask", "linux_pkg": "insomnia", "linux_snap": True},
+        "Telerik.Fiddler.Classic": {"label": "Fiddler Everywhere", "mac_pkg": "fiddler-everywhere", "type": "cask", "linux_pkg": None},
     },
     "Cloud & Infrastructure": {
-        "Microsoft.AzureCLI": {"label": "Azure CLI", "mac_pkg": "azure-cli", "type": "formula"},
-        "Microsoft.Azure.FunctionsCoreTools": {"label": "Azure Functions Core Tools", "mac_pkg": "azure-functions-core-tools", "type": "formula"},
-        "Amazon.AWSCLI": {"label": "AWS CLI", "mac_pkg": "awscli", "type": "formula"},
-        "Google.CloudSDK": {"label": "Google Cloud SDK", "mac_pkg": "google-cloud-sdk", "type": "formula"},
-        "Hashicorp.Terraform": {"label": "Terraform", "mac_pkg": "terraform", "type": "formula"},
-        "Kubernetes.kubectl": {"label": "Kubectl", "mac_pkg": "kubectl", "type": "formula"},
+        "Microsoft.AzureCLI": {"label": "Azure CLI", "mac_pkg": "azure-cli", "type": "formula", "linux_pkg": "azure-cli", "linux_source": "microsoft"},
+        "Microsoft.Azure.FunctionsCoreTools": {"label": "Azure Functions Core Tools", "mac_pkg": "azure-functions-core-tools", "type": "formula", "linux_pkg": "azure-functions-core-tools", "linux_source": "microsoft"},
+        "Amazon.AWSCLI": {"label": "AWS CLI", "mac_pkg": "awscli", "type": "formula", "linux_pkg": "awscli"},
+        "Google.CloudSDK": {"label": "Google Cloud SDK", "mac_pkg": "google-cloud-sdk", "type": "formula", "linux_pkg": "google-cloud-sdk", "linux_source": "google"},
+        "Hashicorp.Terraform": {"label": "Terraform", "mac_pkg": "terraform", "type": "formula", "linux_pkg": "terraform", "linux_source": "hashicorp"},
+        "Kubernetes.kubectl": {"label": "Kubectl", "mac_pkg": "kubectl", "type": "formula", "linux_pkg": "kubectl", "linux_snap": True},
     },
     "Containers & Databases": {
-        "Docker.DockerDesktop": {"label": "Docker Desktop", "mac_pkg": "docker", "type": "cask"},
-        "dbeaver.dbeaver": {"label": "DBeaver Community", "mac_pkg": "dbeaver-community", "type": "cask"},
-        "Microsoft.SQLServer.SSMS": {"label": "SQL Server Management Studio (Windows)", "mac_pkg": None, "type": "windows-only"},
-        "MongoDB.MongoDBCompass": {"label": "MongoDB Compass", "mac_pkg": "mongodb-compass", "type": "cask"},
+        "Docker.DockerDesktop": {"label": "Docker / Docker Desktop", "mac_pkg": "docker", "type": "cask", "linux_pkg": "docker.io docker-compose"},
+        "dbeaver.dbeaver": {"label": "DBeaver Community", "mac_pkg": "dbeaver-community", "type": "cask", "linux_pkg": "dbeaver-ce", "linux_snap": True},
+        "Microsoft.SQLServer.SSMS": {"label": "SQL Server Management Studio (Windows)", "mac_pkg": None, "type": "windows-only", "linux_pkg": None},
+        "MongoDB.MongoDBCompass": {"label": "MongoDB Compass", "mac_pkg": "mongodb-compass", "type": "cask", "linux_pkg": "mongodb-compass", "linux_source": "mongodb"},
     },
     "Programming Languages": {
-        "EclipseAdoptium.Temurin.21": {"label": "Java 21 (Temurin)", "mac_pkg": "temurin", "type": "cask"},
-        "GoLang.Go": {"label": "Go", "mac_pkg": "go", "type": "formula"},
-        "Rustlang.Rust.MSVC": {"label": "Rust", "mac_pkg": "rust", "type": "formula"},
-        "PHP.PHP": {"label": "PHP", "mac_pkg": "php", "type": "formula"},
+        "EclipseAdoptium.Temurin.21": {"label": "Java 21 (Temurin)", "mac_pkg": "temurin", "type": "cask", "linux_pkg": "temurin-21-jdk", "linux_source": "adoptium"},
+        "GoLang.Go": {"label": "Go", "mac_pkg": "go", "type": "formula", "linux_pkg": "golang-go"},
+        "Rustlang.Rust.MSVC": {"label": "Rust", "mac_pkg": "rust", "type": "formula", "linux_pkg": "rustc cargo"},
+        "PHP.PHP": {"label": "PHP", "mac_pkg": "php", "type": "formula", "linux_pkg": "php php-cli"},
     },
     "Build Tools": {
-        "Apache.Maven": {"label": "Apache Maven", "mac_pkg": "maven", "type": "formula"},
-        "Gradle.Gradle": {"label": "Gradle", "mac_pkg": "gradle", "type": "formula"},
+        "Apache.Maven": {"label": "Apache Maven", "mac_pkg": "maven", "type": "formula", "linux_pkg": "maven"},
+        "Gradle.Gradle": {"label": "Gradle", "mac_pkg": "gradle", "type": "formula", "linux_pkg": "gradle"},
     },
     "Productivity": {
-        "Microsoft.PowerToys": {"label": "PowerToys (Windows only)", "mac_pkg": None, "type": "windows-only"},
-        "Rectangle": {"label": "Rectangle (macOS only)", "mac_pkg": "rectangle", "type": "cask", "win_pkg": None},
+        "Microsoft.PowerToys": {"label": "PowerToys (Windows only)", "mac_pkg": None, "type": "windows-only", "linux_pkg": None},
+        "Rectangle": {"label": "Rectangle (macOS only)", "mac_pkg": "rectangle", "type": "cask", "win_pkg": None, "linux_pkg": None},
     },
 }
 
@@ -295,6 +295,10 @@ def select_tools(persona_id=None):
             if IS_MACOS and tool_id == "Microsoft.PowerToys":
                 continue
             if IS_MACOS and tool_id == "Microsoft.SQLServer.SSMS":
+                continue
+            if IS_LINUX and tool_id in ["Microsoft.PowerToys", "Rectangle", "Microsoft.SQLServer.SSMS"]:
+                continue
+            if IS_LINUX and tool_info.get("linux_pkg") is None and tool_info.get("type") == "windows-only":
                 continue
             
             # Check if tool should be pre-selected
@@ -442,6 +446,129 @@ def install_macos_tools(selected_tools):
             else:
                 success, _, _ = run_command(
                     ["brew", "install", pkg],
+                    check=False
+                )
+            
+            if success:
+                print(f"   ✅ {tool_info['label']} installed successfully")
+            else:
+                print(f"   ❌ Failed to install {tool_info['label']}")
+
+
+def setup_linux_repositories():
+    """Setup necessary repositories for Linux installations"""
+    print("📦 Setting up package repositories...")
+    
+    # Update package list
+    run_command(["sudo", "apt", "update"], check=False)
+    
+    # Install prerequisites
+    run_command(
+        ["sudo", "apt", "install", "-y", "wget", "curl", "apt-transport-https", "software-properties-common"],
+        check=False
+    )
+    
+    # Add Microsoft repository
+    print("   Adding Microsoft repository...")
+    run_command(
+        ["bash", "-c", "wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O /tmp/packages-microsoft-prod.deb"],
+        check=False
+    )
+    run_command(["sudo", "dpkg", "-i", "/tmp/packages-microsoft-prod.deb"], check=False)
+    run_command(["sudo", "apt", "update"], check=False)
+    
+    # Add GitHub CLI repository
+    print("   Adding GitHub CLI repository...")
+    run_command(
+        ["bash", "-c", "curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg"],
+        check=False
+    )
+    run_command(
+        ["bash", "-c", 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null'],
+        check=False
+    )
+    
+    # Add Hashicorp repository for Terraform
+    print("   Adding HashiCorp repository...")
+    run_command(
+        ["bash", "-c", "wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg"],
+        check=False
+    )
+    run_command(
+        ["bash", "-c", 'echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list'],
+        check=False
+    )
+    
+    # Final update
+    run_command(["sudo", "apt", "update"], check=False)
+    
+
+def install_linux_tools(selected_tools):
+    """Install tools on Linux using apt, snap, and direct downloads"""
+    print_header("Installing Tools on Linux")
+    
+    # Check if snap is available
+    has_snap = check_command_exists("snap")
+    
+    # Setup repositories first
+    setup_linux_repositories()
+    
+    print("✓ Using apt/snap for installations\n")
+    
+    for category, tool_ids in selected_tools.items():
+        for tool_id in tool_ids:
+            tool_info = TOOL_CONFIG[category][tool_id]
+            
+            if not tool_info.get("linux_pkg") and not tool_info.get("linux_snap"):
+                print(f"⚠️  {tool_info['label']} - Not available for Linux, skipping")
+                continue
+            
+            print(f"📦 Installing {tool_info['label']}...")
+            
+            # Install via snap if specified
+            if tool_info.get("linux_snap") and has_snap:
+                pkg = tool_info["linux_pkg"]
+                
+                # Check if already installed
+                success, stdout, _ = run_command(
+                    ["snap", "list", pkg],
+                    check=False
+                )
+                
+                if success:
+                    print(f"   ✓ {tool_info['label']} is already installed")
+                    continue
+                
+                # Install
+                success, _, _ = run_command(
+                    ["sudo", "snap", "install", pkg, "--classic"],
+                    check=False
+                )
+                
+                if not success:
+                    # Try without --classic
+                    success, _, _ = run_command(
+                        ["sudo", "snap", "install", pkg],
+                        check=False
+                    )
+            
+            # Install via apt
+            else:
+                packages = tool_info["linux_pkg"].split()
+                
+                # Check if already installed (check first package)
+                success, stdout, _ = run_command(
+                    ["dpkg", "-l", packages[0]],
+                    check=False
+                )
+                
+                if success and "ii" in stdout:
+                    print(f"   ✓ {tool_info['label']} is already installed")
+                    continue
+                
+                # Install
+                success, _, _ = run_command(
+                    ["sudo", "apt", "install", "-y"] + packages,
                     check=False
                 )
             
@@ -605,14 +732,54 @@ def setup_macos_shell():
     print("    Set your Terminal/iTerm2 font to 'FiraCode Nerd Font'")
 
 
+def setup_linux_shell():
+    """Setup Oh My Zsh and fonts on Linux"""
+    print_header("Setting Up Linux Shell Enhancements")
+    
+    # Install zsh if not present
+    if not check_command_exists("zsh"):
+        print("📦 Installing Zsh...")
+        run_command(["sudo", "apt", "install", "-y", "zsh"], check=False)
+    
+    # Install Oh My Zsh
+    if not Path.home().joinpath(".oh-my-zsh").exists():
+        print("📦 Installing Oh My Zsh...")
+        run_command(
+            'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended',
+            shell=True,
+            check=False
+        )
+    
+    # Install fonts
+    print("📦 Installing FiraCode Nerd Font...")
+    fonts_dir = Path.home() / ".local" / "share" / "fonts"
+    fonts_dir.mkdir(parents=True, exist_ok=True)
+    
+    run_command(
+        ["bash", "-c", f"cd /tmp && wget -q https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/FiraCode.zip && unzip -q -o FiraCode.zip -d {fonts_dir} && rm FiraCode.zip"],
+        check=False
+    )
+    run_command(["fc-cache", "-fv"], check=False)
+    
+    # Set zsh as default shell
+    print("📦 Setting Zsh as default shell...")
+    zsh_path = subprocess.run(["which", "zsh"], capture_output=True, text=True).stdout.strip()
+    if zsh_path:
+        run_command(["chsh", "-s", zsh_path], check=False)
+    
+    print("\n⚠️  MANUAL STEP REQUIRED:")
+    print("    Set your Terminal font to 'FiraCode Nerd Font'")
+    print("    Log out and log back in for shell changes to take effect")
+
+
 def main():
     """Main execution flow"""
     print_header("Developer Environment Setup")
     print(f"Platform: {platform.system()}")
     print(f"Python: {sys.version}")
     
-    if not IS_WINDOWS and not IS_MACOS:
-        print("❌ Unsupported platform. This script only supports Windows and macOS.")
+    if not IS_WINDOWS and not IS_MACOS and not IS_LINUX:
+        print("❌ Unsupported platform. This script supports Windows, macOS, and Linux.")
         sys.exit(1)
     
     # Backward navigation loop: persona -> tools -> confirm -> install
@@ -639,6 +806,9 @@ def main():
                 elif IS_MACOS:
                     install_macos_tools(selected_tools)
                     setup_macos_shell()
+                elif IS_LINUX:
+                    install_linux_tools(selected_tools)
+                    setup_linux_shell()
 
                 # Install VS Code extensions
                 if selected_extensions:
