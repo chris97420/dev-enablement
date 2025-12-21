@@ -16,10 +16,13 @@ addopts = [
 source = ["."]
 omit = [
     "test_*.py",
+    "run_tests.py",
     "*/tests/*",
     "*/test/*",
     ".venv/*",
     "*/venv/*",
+    "bootstrap.sh",
+    "bootstrap.ps1",
 ]
 
 [tool.coverage.report]

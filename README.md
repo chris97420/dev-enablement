@@ -197,6 +197,10 @@ pip install -r requirements-test.txt
 
 **Run tests:**
 ```bash
+# Easy way - using the test runner script
+python run_tests.py
+
+# Or directly with pytest
 # Run all tests with coverage
 pytest test_setup_dev_env.py -v --cov=. --cov-report=term
 
