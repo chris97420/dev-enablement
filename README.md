@@ -1,133 +1,192 @@
 # Portable Developer Environment Setup Script
 
-This script provides a **portable, easy-to-run, cross-platform setup** for developers on **Windows 11** and **macOS**, with an **interactive menu** to select tools and sensible defaults.
+A **cross-platform, persona-driven developer environment setup** for **Windows 11** and **macOS**. Works on brand new machines with zero prerequisites!
 
 ## ✨ Features
 
-**Interactive Tool Selection:**
-- Choose which tools and extensions to install
-- Toggle selections with simple number inputs
-- Select all, deselect all, or customize your setup
-- No unwanted software installed!
+**✅ Bootstrap Support:**
+- Works on completely fresh machines
+- Automatically installs Python and all dependencies
+- Single command to get started
 
-**Tools installed:**
-- Git
-- Node.js (LTS)
-- Python
-- .NET SDK
-- GitHub CLI (`gh`)
-- Visual Studio Code
-- Postman (API testing)
-- Azure CLI
-- Azure Functions Core Tools
-- Docker Desktop
-- Insomnia (API testing)
-- Fiddler Everywhere (network debugging)
-- Azure Data Studio (database management)
-- Terraform (Infrastructure as Code)
-- Kubectl (Kubernetes CLI)
-- PowerToys (Windows only - productivity utilities)
-- Rectangle (macOS only - window management)
-- AWS CLI (Amazon Web Services)
-- Google Cloud SDK (Google Cloud Platform)
+**👤 Developer Personas:**
+- **.NET Full-Stack Developer** - C#, ASP.NET Core, Azure, SQL Server
+- **Node.js Full-Stack Developer** - JavaScript, Express, React, MongoDB
+- **Node.js TypeScript Full-Stack Developer** - TypeScript, Next.js, React
+- **Python Full-Stack Developer** - Python, Django/Flask/FastAPI, PostgreSQL
+- **Java Full-Stack Developer** - Java, Spring Boot, Maven, PostgreSQL
+- **Custom Selection** - Manually choose your tools
+
+**🛠️ Tools Included:**
+- **Core:** Git, Node.js, Python, .NET SDK, GitHub CLI, VS Code
+- **API & Testing:** Postman, Insomnia, Fiddler
+- **Cloud:** Azure CLI, Azure Functions, AWS CLI, Google Cloud SDK, Docker, Terraform, Kubectl
+- **Databases:** DBeaver, MongoDB Compass, SQL Server Management Studio (Windows)
+- **Languages:** Java (Temurin), Go, Rust, PHP
+- **Build Tools:** Maven, Gradle
+- **Productivity:** PowerToys (Windows), Rectangle (macOS)
 
 ---
 
-## How Does It Work?
+## 🚀 Quick Start
 
-**VS Code Extensions:**
-- GitHub Copilot
-- GitHub Copilot Chat
-- GitHub Pull Requests & Issues
-- GitHub Theme
-- Windows AI Studio
-- REST Client
-- Azure Functions
-- Azure Account
-- ESLint
-- Prettier
-- Remote Containers
-- Docker
-
-**Additional features:**
-- GitHub Copilot CLI (npm global tool)
-- **Windows:** Installs Oh My Posh, Terminal-Icons PowerShell module, sets up PowerShell profile
-- **macOS:** Installs Oh My Zsh, FiraCode Nerd Font, sets Zsh as shell
-
----
-
-## 🚀 Quick Usage
-
-**Run in PowerShell Core (`pwsh`) on Windows 11 or macOS.**
+### Windows 11
+**One command in PowerShell:**
 ```powershell
-pwsh -c "iwr -useb 'https://raw.githubusercontent.com/chris97420/dev-setup/refs/heads/main/setup-dev-env.ps1' | iex"
+iwr -useb "https://raw.githubusercontent.com/chris97420/dev-setup/main/bootstrap.ps1" | iex
 ```
 
-The script will display an interactive menu where you can:
-- **↑/↓ Arrow keys** or **k/j** to navigate
-- **Spacebar** to toggle tools on/off
-- **a** to select all
-- **n** to deselect all  
-- **Enter** to start installation
-- **q** or **Esc** to exit
+Or if cloned:
+```powershell
+.\bootstrap.ps1
+```
+
+### macOS
+**One command in Terminal:**
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/chris97420/dev-setup/main/bootstrap.sh)
+```
+
+Or if cloned:
+```bash
+chmod +x bootstrap.sh && ./bootstrap.sh
+```
+
+### What Happens:
+1. Installs Python 3, pip, and dependencies
+2. Launches interactive setup with persona selection
+3. Installs selected tools and VS Code extensions
+4. Configures shell enhancements
+
 ---
 
-## 📦 Available Tools
+## 📋 Developer Personas
 
-The interactive menu organizes tools into categories:
+### .NET Full-Stack Developer
+- C#, ASP.NET Core, Entity Framework
+- .NET SDK, Azure CLI, Azure Functions, SQL Server Management Studio
+- C# DevKit, Azure Functions extensions
 
-- **Windows 11:** Installs/updates tools first with [winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/), otherwise falls back on [Chocolatey](https://chocolatey.org/).
-- **macOS:** Uses [Homebrew](https://brew.sh/).
-- **VS Code Extensions:** Installs using the `code` command.
-- **Copilot CLI:** Globally installed via `npm`.
+### Node.js Full-Stack Developer
+- JavaScript, Express, React
+- Node.js LTS, Docker, MongoDB Compass, DBeaver
+- ESLint, Prettier, Docker, MongoDB extensions
+
+### Node.js TypeScript Full-Stack Developer
+- TypeScript, Next.js, React
+- Node.js LTS, Docker, DBeaver
+- ESLint, Prettier, Docker, Tailwind CSS extensions
+
+### Python Full-Stack Developer
+- Python, Django/Flask/FastAPI
+- Python 3.12, Docker, DBeaver
+- Python, Pylance, Debugger, Docker extensions
+
+### Java Full-Stack Developer
+- Java, Spring Boot, Maven
+- Java 21 (Temurin), Maven, Docker, DBeaver
+- Java Extension Pack, Spring Boot Tools, Maven extensions
 
 ---
 
-## 🦄 Prompt Glyphs/Emoji Supported!
+## 🛠️ Advanced Usage
+
+### If Python Already Installed:
+```bash
+pip install questionary
+python setup-dev-env.py
+```
+
+### PowerShell Version (Alternative):
+```powershell
+pwsh setup-dev-env.ps1
+```
+
+---
+
+## 📦 VS Code Extensions
+
+Extensions installed based on your persona:
+
+**Core & AI:**
+- GitHub Copilot & Copilot Chat
+- GitHub Pull Requests & Issues
+- Windows AI Studio
+- REST Client
+
+**General:**
+- Docker, Remote Containers
+- ESLint, Prettier
+
+**Language-Specific:**
+- **.NET:** C# DevKit, Azure Functions
+- **Python:** Python, Pylance, Debugger
+- **Java:** Java Extension Pack, Spring Boot Tools, Maven
+- **JavaScript/TypeScript:** Tailwind CSS
+- **Database:** MongoDB
+
+---
+
+## 🦄 Shell Enhancements
 
 ### Windows:
-- Installs [Oh My Posh](https://ohmyposh.dev/) for beautiful PowerShell prompts.
-- Installs [Terminal-Icons](https://github.com/devblackops/Terminal-Icons) PowerShell module for colorful file/folder icons in directory listings.
-- **Manual step required:**  
-  Set the font of your Windows Terminal or PowerShell window to **Cascadia Mono PL**, **FiraCode NF**, or another Nerd Font for full glyph/emoji support.
+- [Oh My Posh](https://ohmyposh.dev/) - Beautiful PowerShell prompts
+- [Terminal-Icons](https://github.com/devblackops/Terminal-Icons) - Colorful file icons
+- **Action Required:** Set font to **Cascadia Mono PL** or **FiraCode NF**
 
 ### macOS:
-- Installs [Oh My Zsh](https://ohmyz.sh/) (Zsh themes & plugins).
-- Installs **FiraCode Nerd Font** for best compatibility.
-- **Manual step required:**  
-  Set your Terminal/iTerm2 font to **FiraCode Nerd Font**, **MesloLGS NF**, or another Nerd Font via Preferences.
-- **Zsh shell will be set as default** (if it isn't already).
-
-**Why?**  
-Many modern prompts (and Copilot, etc) use powerline/emoji/nerd fonts.  
-You’ll only see the “full experience” after you update your terminal’s font.
+- [Oh My Zsh](https://ohmyz.sh/) - Zsh themes & plugins
+- FiraCode Nerd Font installed
+- **Action Required:** Set font to **FiraCode Nerd Font**
+- Zsh set as default shell
 
 ---
 
-## Requirements
+## 📝 How It Works
 
-- **PowerShell Core** (`pwsh`)
-    - Windows 11: Pre-installed.
-    - macOS:  
-      ```sh
-      brew install --cask powershell
-      ```
-- **VS Code:** Automatically installed, but you may need to relaunch your terminal or log out/in for the `code` command to appear.
+- **Windows:** [winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/) package manager
+- **macOS:** [Homebrew](https://brew.sh/) package manager
+- **Extensions:** VS Code `code` CLI
+- **Copilot CLI:** npm global install
 
 ---
 
-## Troubleshooting
+## 🔧 Troubleshooting
 
-- You may need to run **as Administrator** or confirm permissions.
-- If you see “command not found: pwsh”, install PowerShell Core.
-- On first run, VS Code may not yet be in your PATH – close/reopen terminal or log out/in, then rerun the script to install extensions if needed.
+**Bootstrap Issues:**
+- Windows: May need Administrator privileges
+- macOS: May need sudo for Homebrew install
+
+**winget not found:**
+- Install from Microsoft Store or https://aka.ms/getwinget
+
+**PATH issues:**
+- Restart terminal after installation
+- Log out/in if tools still not found
+
+**VS Code CLI not found:**
+- Restart terminal or log out/in after VS Code install
 
 ---
 
-## Customization
+## 🎨 Customization
 
-- Fork this script on [GitHub Gist](https://gist.github.com/) and add your favorite tools or configuration steps.
-- To add more VS Code extensions, list their IDs in the `$extensions` array inside the script.
+**Add Tools:**
+Edit `TOOL_CONFIG` dictionary in [setup-dev-env.py](setup-dev-env.py)
+
+**Add Extensions:**
+Update `VSCODE_EXTENSIONS` dictionary
+
+**Create Personas:**
+Add new entries to `PERSONAS` dictionary with custom toolsets
+
+---
+
+## ⚙️ Requirements
+
+**None for bootstrap!** 
+
+For manual runs: Python 3.8+ and pip
 
 ---
 
