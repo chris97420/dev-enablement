@@ -112,11 +112,19 @@ Write-Host "  Launching Main Setup Script" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 Write-Host ""
 
-$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$mainScript = Join-Path $scriptDir "setup-dev-env.py"
+# Determine if we're running from a file or via iex
+$scriptPath = $MyInvocation.MyCommand.Path
+$isRemoteExecution = [string]::IsNullOrEmpty($scriptPath)
+
+if (-not $isRemoteExecution) {
+    $scriptDir = Split-Path -Parent $scriptPath
+    $mainScript = Join-Path $scriptDir "setup-dev-env.py"
+} else {
+    $mainScript = $null
+}
 
 # If the main script is not found locally (e.g., running via iwr | iex), download from GitHub and run
-if (Test-Path $mainScript) {
+if ($mainScript -and (Test-Path $mainScript)) {
     python $mainScript
 } else {
     Write-Host "❗ setup-dev-env.py not found next to bootstrap. Downloading from GitHub..." -ForegroundColor Yellow
