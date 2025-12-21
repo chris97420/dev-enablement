@@ -18,7 +18,7 @@ A **cross-platform, persona-driven developer environment setup** for **Windows 1
 - **Custom Selection** - Manually choose your tools
 
 **🛠️ Tools Included:**
-- **Core:** Git, Node.js, Python, .NET SDK, GitHub CLI, VS Code
+- **Core:** Git, Node.js, Python, .NET SDK, GitHub CLI, GitHub Copilot CLI, VS Code
 - **API & Testing:** Postman, Insomnia, Fiddler
 - **Cloud:** Azure CLI, Azure Functions, AWS CLI, Google Cloud SDK, Docker, Terraform, Kubectl
 - **Databases:** DBeaver, MongoDB Compass, SQL Server Management Studio (Windows)
@@ -83,26 +83,31 @@ chmod +x bootstrap.sh && ./bootstrap.sh
 ### .NET Full-Stack Developer
 - C#, ASP.NET Core, Entity Framework
 - .NET SDK, Azure CLI, Azure Functions, SQL Server Management Studio
+- GitHub CLI, GitHub Copilot CLI
 - C# DevKit, Azure Functions extensions
 
 ### Node.js Full-Stack Developer
 - JavaScript, Express, React
 - Node.js LTS, Docker, MongoDB Compass, DBeaver
+- GitHub CLI, GitHub Copilot CLI
 - ESLint, Prettier, Docker, MongoDB extensions
 
 ### Node.js TypeScript Full-Stack Developer
 - TypeScript, Next.js, React
 - Node.js LTS, Docker, DBeaver
+- GitHub CLI, GitHub Copilot CLI
 - ESLint, Prettier, Docker, Tailwind CSS extensions
 
 ### Python Full-Stack Developer
 - Python, Django/Flask/FastAPI
 - Python 3.12, Docker, DBeaver
+- GitHub CLI, GitHub Copilot CLI
 - Python, Pylance, Debugger, Docker extensions
 
 ### Java Full-Stack Developer
 - Java, Spring Boot, Maven
 - Java 21 (Temurin), Maven, Docker, DBeaver
+- GitHub CLI, GitHub Copilot CLI
 - Java Extension Pack, Spring Boot Tools, Maven extensions
 
 ---
@@ -173,7 +178,7 @@ During setup, you can optionally select shell enhancements for your terminal:
 - **macOS:** [Homebrew](https://brew.sh/) package manager
 - **Linux:** [apt](https://wiki.debian.org/Apt) and [snap](https://snapcraft.io/) package managers
 - **Extensions:** VS Code `code` CLI
-- **Copilot CLI:** npm global install
+- **npm packages:** Global npm install for CLI tools (e.g., GitHub Copilot CLI)
 
 ---
 

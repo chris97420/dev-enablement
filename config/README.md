@@ -26,11 +26,12 @@ Defines developer personas (pre-configured toolsets). Each persona includes:
 ### `tools.json`
 Defines available tools organized by category. Each tool includes:
 - `label`: Display name
-- `mac_pkg`: Homebrew package name (macOS)
-- `type`: "formula" or "cask" for Homebrew
-- `linux_pkg`: apt package name(s) for Linux
+- `mac_pkg`: Homebrew package name (macOS) or npm package name for npm-based tools
+- `type`: "formula", "cask" for Homebrew, or "npm" for npm global packages
+- `linux_pkg`: apt package name(s) for Linux or npm package name for npm-based tools
 - `linux_snap`: Set to `true` if available via snap
 - `linux_source`: Repository name if custom repo needed (e.g., "microsoft", "hashicorp")
+- `npm_global`: Set to `true` for npm packages that should be installed globally
 
 **Example:**
 ```json
@@ -42,12 +43,19 @@ Defines available tools organized by category. Each tool includes:
       "type": "formula",
       "linux_pkg": "custom-tool",
       "linux_snap": false
+    },
+    "My.NPMTool": {
+      "label": "My NPM Tool",
+      "mac_pkg": "@scope/package-name",
+      "type": "npm",
+      "linux_pkg": "@scope/package-name",
+      "npm_global": true
     }
   }
 }
 ```
 
-**Windows Note:** Tool IDs are used directly with winget on Windows.
+**Windows Note:** Tool IDs are used directly with winget on Windows, except for npm packages which use npm globally.
 
 ### `extensions.json`
 Maps VS Code extension IDs to display names.

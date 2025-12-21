@@ -31,6 +31,13 @@
       "type": "formula",
       "linux_pkg": "gh"
     },
+    "GitHub.CopilotCLI": {
+      "label": "GitHub Copilot CLI",
+      "mac_pkg": "@githubnext/github-copilot-cli",
+      "type": "npm",
+      "linux_pkg": "@githubnext/github-copilot-cli",
+      "npm_global": true
+    },
     "Microsoft.VisualStudioCode": {
       "label": "Visual Studio Code",
       "mac_pkg": "visual-studio-code",

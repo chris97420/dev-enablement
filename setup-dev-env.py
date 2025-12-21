@@ -420,6 +420,35 @@ def install_windows_tools(selected_tools):
             tool_info = TOOL_CONFIG[category][tool_id]
             print(f"📦 Installing {tool_info['label']}...")
             
+            # Handle npm-based tools
+            if tool_info.get("type") == "npm" and tool_info.get("npm_global"):
+                pkg = tool_info.get("mac_pkg")  # npm package name stored here
+                if not check_command_exists("npm"):
+                    print(f"   ⚠️  npm not found. Please install Node.js first.")
+                    continue
+                
+                # Check if already installed
+                success, stdout, _ = run_command(
+                    ["npm", "list", "-g", pkg],
+                    check=False
+                )
+                
+                if pkg in stdout:
+                    print(f"   ✓ {tool_info['label']} is already installed")
+                    continue
+                
+                # Install via npm
+                success, _, _ = run_command(
+                    ["npm", "install", "-g", pkg],
+                    check=False
+                )
+                
+                if success:
+                    print(f"   ✅ {tool_info['label']} installed successfully")
+                else:
+                    print(f"   ❌ Failed to install {tool_info['label']}")
+                continue
+            
             # Check if already installed
             success, stdout, _ = run_command(
                 ["winget", "list", "--exact", "--id", tool_id],
@@ -472,6 +501,34 @@ def install_macos_tools(selected_tools):
             
             pkg = tool_info["mac_pkg"]
             print(f"📦 Installing {tool_info['label']}...")
+            
+            # Handle npm-based tools
+            if tool_info.get("type") == "npm" and tool_info.get("npm_global"):
+                if not check_command_exists("npm"):
+                    print(f"   ⚠️  npm not found. Please install Node.js first.")
+                    continue
+                
+                # Check if already installed
+                success, stdout, _ = run_command(
+                    ["npm", "list", "-g", pkg],
+                    check=False
+                )
+                
+                if pkg in stdout:
+                    print(f"   ✓ {tool_info['label']} is already installed")
+                    continue
+                
+                # Install via npm
+                success, _, _ = run_command(
+                    ["npm", "install", "-g", pkg],
+                    check=False
+                )
+                
+                if success:
+                    print(f"   ✅ {tool_info['label']} installed successfully")
+                else:
+                    print(f"   ❌ Failed to install {tool_info['label']}")
+                continue
             
             # Check if already installed
             if tool_info["type"] == "cask":
@@ -571,11 +628,40 @@ def install_linux_tools(selected_tools):
         for tool_id in tool_ids:
             tool_info = TOOL_CONFIG[category][tool_id]
             
-            if not tool_info.get("linux_pkg") and not tool_info.get("linux_snap"):
+            if not tool_info.get("linux_pkg") and not tool_info.get("linux_snap") and not tool_info.get("type") == "npm":
                 print(f"⚠️  {tool_info['label']} - Not available for Linux, skipping")
                 continue
             
             print(f"📦 Installing {tool_info['label']}...")
+            
+            # Handle npm-based tools
+            if tool_info.get("type") == "npm" and tool_info.get("npm_global"):
+                pkg = tool_info.get("linux_pkg")  # npm package name
+                if not check_command_exists("npm"):
+                    print(f"   ⚠️  npm not found. Please install Node.js first.")
+                    continue
+                
+                # Check if already installed
+                success, stdout, _ = run_command(
+                    ["npm", "list", "-g", pkg],
+                    check=False
+                )
+                
+                if pkg in stdout:
+                    print(f"   ✓ {tool_info['label']} is already installed")
+                    continue
+                
+                # Install via npm
+                success, _, _ = run_command(
+                    ["npm", "install", "-g", pkg],
+                    check=False
+                )
+                
+                if success:
+                    print(f"   ✅ {tool_info['label']} installed successfully")
+                else:
+                    print(f"   ❌ Failed to install {tool_info['label']}")
+                continue
             
             # Install via snap if specified
             if tool_info.get("linux_snap") and has_snap:
@@ -690,28 +776,6 @@ def confirm_selection(persona_id, selected_tools, selected_extensions):
     if action is None:
         return "cancel"
     return action
-
-
-def install_copilot_cli():
-    """Install GitHub Copilot CLI"""
-    print_header("Installing GitHub Copilot CLI")
-    
-    if not check_command_exists("node"):
-        print("❌ Node.js not found. Skipping Copilot CLI installation.")
-        return
-    
-    if check_command_exists("github-copilot-cli"):
-        print("✓ GitHub Copilot CLI is already installed")
-        return
-    
-    print("📦 Installing GitHub Copilot CLI...")
-    success, _, _ = run_command(
-        ["npm", "install", "-g", "@githubnext/github-copilot-cli"],
-        check=False
-    )
-    
-    if success:
-        print("✅ GitHub Copilot CLI installed successfully")
 
 
 def setup_windows_shell():
@@ -858,9 +922,6 @@ def main():
                 # Install VS Code extensions
                 if selected_extensions:
                     install_vscode_extensions(selected_extensions)
-
-                # Install Copilot CLI
-                install_copilot_cli()
 
                 print_header("Installation Complete!")
                 print("✅ All selected tools have been installed.")

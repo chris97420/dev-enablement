@@ -11,7 +11,8 @@
       "Docker.DockerDesktop",
       "Microsoft.SQLServer.SSMS",
       "Postman.Postman",
-      "GitHub.cli"
+      "GitHub.cli",
+      "GitHub.CopilotCLI"
     ],
     "extensions": [
       "GitHub.copilot",
@@ -35,6 +36,7 @@
       "Docker.DockerDesktop",
       "Postman.Postman",
       "GitHub.cli",
+      "GitHub.CopilotCLI",
       "dbeaver.dbeaver",
       "MongoDB.MongoDBCompass"
     ],
@@ -60,6 +62,7 @@
       "Docker.DockerDesktop",
       "Postman.Postman",
       "GitHub.cli",
+      "GitHub.CopilotCLI",
       "dbeaver.dbeaver"
     ],
     "extensions": [
@@ -84,6 +87,7 @@
       "Docker.DockerDesktop",
       "Postman.Postman",
       "GitHub.cli",
+      "GitHub.CopilotCLI",
       "dbeaver.dbeaver"
     ],
     "extensions": [
@@ -109,6 +113,7 @@
       "Docker.DockerDesktop",
       "Postman.Postman",
       "GitHub.cli",
+      "GitHub.CopilotCLI",
       "dbeaver.dbeaver"
     ],
     "extensions": [
