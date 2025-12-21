@@ -196,14 +196,72 @@ Extensions installed based on your persona:
 
 ## 🎨 Customization
 
-**Add Tools:**
-Edit `TOOL_CONFIG` dictionary in [setup-dev-env.py](setup-dev-env.py)
+The setup script uses JSON configuration files in the [`config/`](config/) directory for easy customization without modifying the Python script.
 
-**Add Extensions:**
-Update `VSCODE_EXTENSIONS` dictionary
+### Configuration Files
 
-**Create Personas:**
-Add new entries to `PERSONAS` dictionary with custom toolsets
+- **[`config/personas.json`](config/personas.json)** - Developer personas with pre-configured tool and extension sets
+- **[`config/tools.json`](config/tools.json)** - Available tools organized by category with platform-specific package names
+- **[`config/extensions.json`](config/extensions.json)** - VS Code extensions with display names
+
+### Quick Examples
+
+**Add a new persona:**
+Edit [`config/personas.json`](config/personas.json):
+```json
+{
+  "go-developer": {
+    "label": "Go Developer",
+    "description": "Go programming with Docker and GitHub tools",
+    "tools": ["Git.Git", "GoLang.Go", "Microsoft.VisualStudioCode", "Docker.DockerDesktop"],
+    "extensions": ["GitHub.copilot", "golang.go", "ms-azuretools.vscode-docker"]
+  }
+}
+```
+
+**Add a new tool:**
+Edit [`config/tools.json`](config/tools.json):
+```json
+{
+  "Custom Category": {
+    "Vendor.ToolName": {
+      "label": "My Custom Tool",
+      "mac_pkg": "custom-tool",
+      "type": "formula",
+      "linux_pkg": "custom-tool"
+    }
+  }
+}
+```
+
+**Add a VS Code extension:**
+Edit [`config/extensions.json`](config/extensions.json):
+```json
+{
+  "publisher.extension-id": "Display Name"
+}
+```
+
+For detailed customization instructions, see [`config/README.md`](config/README.md).
+
+### Validation
+
+Before running the setup script with custom configurations, validate your JSON files:
+```bash
+python validate_config.py
+```
+
+This will check:
+- JSON syntax is valid
+- Required fields are present
+- Data types are correct
+- Structure matches expected format
+
+### Fallback Behavior
+
+- If configuration files are missing, built-in defaults are used
+- Invalid JSON triggers warnings but doesn't stop execution
+- Script continues with default values on configuration errors
 
 ---
 

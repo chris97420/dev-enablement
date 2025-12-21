@@ -19,6 +19,7 @@ import subprocess
 import sys
 import platform
 import os
+import json
 from pathlib import Path
 
 # Check for required modules and install if missing
@@ -36,8 +37,35 @@ IS_WINDOWS = platform.system() == "Windows"
 IS_MACOS = platform.system() == "Darwin"
 IS_LINUX = platform.system() == "Linux"
 
-# Developer Personas
-PERSONAS = {
+
+def load_json_config(filename, default_value=None):
+    """Load configuration from JSON file with fallback to default"""
+    script_dir = Path(__file__).parent
+    config_path = script_dir / "config" / filename
+    
+    try:
+        if config_path.exists():
+            with open(config_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        else:
+            if default_value is not None:
+                return default_value
+            raise FileNotFoundError(f"Configuration file not found: {config_path}")
+    except json.JSONDecodeError as e:
+        print(f"⚠️  Error parsing {filename}: {e}")
+        print(f"   Using default configuration")
+        if default_value is not None:
+            return default_value
+        raise
+    except Exception as e:
+        print(f"⚠️  Error loading {filename}: {e}")
+        if default_value is not None:
+            return default_value
+        raise
+
+
+# Developer Personas - Loaded from config/personas.json
+PERSONAS = load_json_config("personas.json", {
     "dotnet-fullstack": {
         "label": ".NET Full-Stack Developer",
         "description": "C#, ASP.NET Core, Azure, SQL Server, Entity Framework",
@@ -120,10 +148,10 @@ PERSONAS = {
         "tools": [],
         "extensions": []
     }
-}
+})
 
 # Tool configuration
-TOOL_CONFIG = {
+TOOL_CONFIG = load_json_config("tools.json", {
     "Core": {
         "Git.Git": {"label": "Git", "mac_pkg": "git", "type": "formula", "linux_pkg": "git"},
         "OpenJS.NodeJS.LTS": {"label": "Node.js (LTS)", "mac_pkg": "node", "type": "formula", "linux_pkg": "nodejs npm"},
@@ -165,9 +193,9 @@ TOOL_CONFIG = {
         "Microsoft.PowerToys": {"label": "PowerToys (Windows only)", "mac_pkg": None, "type": "windows-only", "linux_pkg": None},
         "Rectangle": {"label": "Rectangle (macOS only)", "mac_pkg": "rectangle", "type": "cask", "win_pkg": None, "linux_pkg": None},
     },
-}
+})
 
-VSCODE_EXTENSIONS = {
+VSCODE_EXTENSIONS = load_json_config("extensions.json", {
     # Core GitHub & AI
     "GitHub.copilot": "GitHub Copilot",
     "GitHub.copilot-chat": "GitHub Copilot Chat",
@@ -206,7 +234,7 @@ VSCODE_EXTENSIONS = {
     
     # Database
     "mongodb.mongodb-vscode": "MongoDB",
-}
+})
 
 
 def print_header(text):

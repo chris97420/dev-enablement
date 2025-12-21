@@ -1,0 +1,132 @@
+{
+  "dotnet-fullstack": {
+    "label": ".NET Full-Stack Developer",
+    "description": "C#, ASP.NET Core, Azure, SQL Server, Entity Framework",
+    "tools": [
+      "Git.Git",
+      "Microsoft.DotNet.SDK.9",
+      "Microsoft.VisualStudioCode",
+      "Microsoft.AzureCLI",
+      "Microsoft.Azure.FunctionsCoreTools",
+      "Docker.DockerDesktop",
+      "Microsoft.SQLServer.SSMS",
+      "Postman.Postman",
+      "GitHub.cli"
+    ],
+    "extensions": [
+      "GitHub.copilot",
+      "GitHub.copilot-chat",
+      "ms-dotnettools.csharp",
+      "ms-dotnettools.csdevkit",
+      "ms-azuretools.vscode-azurefunctions",
+      "ms-vscode.azure-account",
+      "ms-azuretools.vscode-docker",
+      "humao.rest-client",
+      "GitHub.vscode-pull-request-github"
+    ]
+  },
+  "nodejs-fullstack": {
+    "label": "Node.js Full-Stack Developer",
+    "description": "JavaScript, Express, React, MongoDB, PostgreSQL",
+    "tools": [
+      "Git.Git",
+      "OpenJS.NodeJS.LTS",
+      "Microsoft.VisualStudioCode",
+      "Docker.DockerDesktop",
+      "Postman.Postman",
+      "GitHub.cli",
+      "dbeaver.dbeaver",
+      "MongoDB.MongoDBCompass"
+    ],
+    "extensions": [
+      "GitHub.copilot",
+      "GitHub.copilot-chat",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-azuretools.vscode-docker",
+      "humao.rest-client",
+      "GitHub.vscode-pull-request-github",
+      "mongodb.mongodb-vscode",
+      "ms-vscode-remote.remote-containers"
+    ]
+  },
+  "nodejs-typescript-fullstack": {
+    "label": "Node.js TypeScript Full-Stack Developer",
+    "description": "TypeScript, Express, React, Next.js, PostgreSQL",
+    "tools": [
+      "Git.Git",
+      "OpenJS.NodeJS.LTS",
+      "Microsoft.VisualStudioCode",
+      "Docker.DockerDesktop",
+      "Postman.Postman",
+      "GitHub.cli",
+      "dbeaver.dbeaver"
+    ],
+    "extensions": [
+      "GitHub.copilot",
+      "GitHub.copilot-chat",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-azuretools.vscode-docker",
+      "humao.rest-client",
+      "GitHub.vscode-pull-request-github",
+      "ms-vscode-remote.remote-containers",
+      "bradlc.vscode-tailwindcss"
+    ]
+  },
+  "python-fullstack": {
+    "label": "Python Full-Stack Developer",
+    "description": "Python, Django/Flask/FastAPI, PostgreSQL, Docker",
+    "tools": [
+      "Git.Git",
+      "Python.Python.3.12",
+      "Microsoft.VisualStudioCode",
+      "Docker.DockerDesktop",
+      "Postman.Postman",
+      "GitHub.cli",
+      "dbeaver.dbeaver"
+    ],
+    "extensions": [
+      "GitHub.copilot",
+      "GitHub.copilot-chat",
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-python.debugpy",
+      "ms-azuretools.vscode-docker",
+      "humao.rest-client",
+      "GitHub.vscode-pull-request-github",
+      "ms-vscode-remote.remote-containers"
+    ]
+  },
+  "java-fullstack": {
+    "label": "Java Full-Stack Developer",
+    "description": "Java, Spring Boot, Maven, PostgreSQL, Docker",
+    "tools": [
+      "Git.Git",
+      "EclipseAdoptium.Temurin.21",
+      "Microsoft.VisualStudioCode",
+      "Apache.Maven",
+      "Docker.DockerDesktop",
+      "Postman.Postman",
+      "GitHub.cli",
+      "dbeaver.dbeaver"
+    ],
+    "extensions": [
+      "GitHub.copilot",
+      "GitHub.copilot-chat",
+      "vscjava.vscode-java-pack",
+      "vscjava.vscode-spring-boot-dashboard",
+      "vmware.vscode-spring-boot",
+      "vscjava.vscode-maven",
+      "ms-azuretools.vscode-docker",
+      "humao.rest-client",
+      "GitHub.vscode-pull-request-github"
+    ]
+  },
+  "custom": {
+    "label": "Custom Selection",
+    "description": "Manually select all tools and extensions",
+    "tools": [],
+    "extensions": []
+  }
+}

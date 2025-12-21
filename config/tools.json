@@ -1,0 +1,190 @@
+{
+  "Core": {
+    "Git.Git": {
+      "label": "Git",
+      "mac_pkg": "git",
+      "type": "formula",
+      "linux_pkg": "git"
+    },
+    "OpenJS.NodeJS.LTS": {
+      "label": "Node.js (LTS)",
+      "mac_pkg": "node",
+      "type": "formula",
+      "linux_pkg": "nodejs npm"
+    },
+    "Python.Python.3.12": {
+      "label": "Python 3",
+      "mac_pkg": "python@3.12",
+      "type": "formula",
+      "linux_pkg": "python3 python3-pip"
+    },
+    "Microsoft.DotNet.SDK.9": {
+      "label": ".NET SDK",
+      "mac_pkg": "dotnet-sdk",
+      "type": "formula",
+      "linux_pkg": "dotnet-sdk-9.0",
+      "linux_source": "microsoft"
+    },
+    "GitHub.cli": {
+      "label": "GitHub CLI",
+      "mac_pkg": "gh",
+      "type": "formula",
+      "linux_pkg": "gh"
+    },
+    "Microsoft.VisualStudioCode": {
+      "label": "Visual Studio Code",
+      "mac_pkg": "visual-studio-code",
+      "type": "cask",
+      "linux_pkg": "code"
+    }
+  },
+  "API & Testing": {
+    "Postman.Postman": {
+      "label": "Postman",
+      "mac_pkg": "postman",
+      "type": "cask",
+      "linux_pkg": "postman",
+      "linux_snap": true
+    },
+    "Insomnia.Insomnia": {
+      "label": "Insomnia",
+      "mac_pkg": "insomnia",
+      "type": "cask",
+      "linux_pkg": "insomnia",
+      "linux_snap": true
+    },
+    "Telerik.Fiddler.Classic": {
+      "label": "Fiddler Everywhere",
+      "mac_pkg": "fiddler-everywhere",
+      "type": "cask",
+      "linux_pkg": null
+    }
+  },
+  "Cloud & Infrastructure": {
+    "Microsoft.AzureCLI": {
+      "label": "Azure CLI",
+      "mac_pkg": "azure-cli",
+      "type": "formula",
+      "linux_pkg": "azure-cli",
+      "linux_source": "microsoft"
+    },
+    "Microsoft.Azure.FunctionsCoreTools": {
+      "label": "Azure Functions Core Tools",
+      "mac_pkg": "azure-functions-core-tools",
+      "type": "formula",
+      "linux_pkg": "azure-functions-core-tools",
+      "linux_source": "microsoft"
+    },
+    "Amazon.AWSCLI": {
+      "label": "AWS CLI",
+      "mac_pkg": "awscli",
+      "type": "formula",
+      "linux_pkg": "awscli"
+    },
+    "Google.CloudSDK": {
+      "label": "Google Cloud SDK",
+      "mac_pkg": "google-cloud-sdk",
+      "type": "formula",
+      "linux_pkg": "google-cloud-sdk",
+      "linux_source": "google"
+    },
+    "Hashicorp.Terraform": {
+      "label": "Terraform",
+      "mac_pkg": "terraform",
+      "type": "formula",
+      "linux_pkg": "terraform",
+      "linux_source": "hashicorp"
+    },
+    "Kubernetes.kubectl": {
+      "label": "Kubectl",
+      "mac_pkg": "kubectl",
+      "type": "formula",
+      "linux_pkg": "kubectl",
+      "linux_snap": true
+    }
+  },
+  "Containers & Databases": {
+    "Docker.DockerDesktop": {
+      "label": "Docker / Docker Desktop",
+      "mac_pkg": "docker",
+      "type": "cask",
+      "linux_pkg": "docker.io docker-compose"
+    },
+    "dbeaver.dbeaver": {
+      "label": "DBeaver Community",
+      "mac_pkg": "dbeaver-community",
+      "type": "cask",
+      "linux_pkg": "dbeaver-ce",
+      "linux_snap": true
+    },
+    "Microsoft.SQLServer.SSMS": {
+      "label": "SQL Server Management Studio (Windows)",
+      "mac_pkg": null,
+      "type": "windows-only",
+      "linux_pkg": null
+    },
+    "MongoDB.MongoDBCompass": {
+      "label": "MongoDB Compass",
+      "mac_pkg": "mongodb-compass",
+      "type": "cask",
+      "linux_pkg": "mongodb-compass",
+      "linux_source": "mongodb"
+    }
+  },
+  "Programming Languages": {
+    "EclipseAdoptium.Temurin.21": {
+      "label": "Java 21 (Temurin)",
+      "mac_pkg": "temurin",
+      "type": "cask",
+      "linux_pkg": "temurin-21-jdk",
+      "linux_source": "adoptium"
+    },
+    "GoLang.Go": {
+      "label": "Go",
+      "mac_pkg": "go",
+      "type": "formula",
+      "linux_pkg": "golang-go"
+    },
+    "Rustlang.Rust.MSVC": {
+      "label": "Rust",
+      "mac_pkg": "rust",
+      "type": "formula",
+      "linux_pkg": "rustc cargo"
+    },
+    "PHP.PHP": {
+      "label": "PHP",
+      "mac_pkg": "php",
+      "type": "formula",
+      "linux_pkg": "php php-cli"
+    }
+  },
+  "Build Tools": {
+    "Apache.Maven": {
+      "label": "Apache Maven",
+      "mac_pkg": "maven",
+      "type": "formula",
+      "linux_pkg": "maven"
+    },
+    "Gradle.Gradle": {
+      "label": "Gradle",
+      "mac_pkg": "gradle",
+      "type": "formula",
+      "linux_pkg": "gradle"
+    }
+  },
+  "Productivity": {
+    "Microsoft.PowerToys": {
+      "label": "PowerToys (Windows only)",
+      "mac_pkg": null,
+      "type": "windows-only",
+      "linux_pkg": null
+    },
+    "Rectangle": {
+      "label": "Rectangle (macOS only)",
+      "mac_pkg": "rectangle",
+      "type": "cask",
+      "win_pkg": null,
+      "linux_pkg": null
+    }
+  }
+}
