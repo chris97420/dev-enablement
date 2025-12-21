@@ -145,18 +145,25 @@ Extensions installed based on your persona:
 
 ---
 
-## 🦄 Shell Enhancements
+## 🦄 Shell Enhancements (Optional)
+
+During setup, you can optionally select shell enhancements for your terminal:
 
 ### Windows:
 - [Oh My Posh](https://ohmyposh.dev/) - Beautiful PowerShell prompts
 - [Terminal-Icons](https://github.com/devblackops/Terminal-Icons) - Colorful file icons
 - **Action Required:** Set font to **Cascadia Mono PL** or **FiraCode NF**
 
-### macOS & Linux:
+### macOS:
 - [Oh My Zsh](https://ohmyz.sh/) - Zsh themes & plugins
 - FiraCode Nerd Font installed
 - **Action Required:** Set font to **FiraCode Nerd Font**
-- Zsh set as default shell
+
+### Linux:
+- [Oh My Bash](https://ohmybash.nntoan.com/) - Bash themes & plugins
+- FiraCode Nerd Font installed
+- **Action Required:** Set font to **FiraCode Nerd Font**
+- Keeps bash as your default shell
 
 ---
 

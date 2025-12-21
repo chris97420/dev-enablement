@@ -350,6 +350,27 @@ def select_tools(persona_id=None):
             checked=is_checked
         ))
     
+    # Add Shell Enhancements option
+    choices.append(Separator("=== Shell Enhancements ==="))
+    if IS_WINDOWS:
+        choices.append(Choice(
+            title="Oh My Posh + Terminal-Icons (Windows)",
+            value=("shell", "windows"),
+            checked=False
+        ))
+    elif IS_MACOS:
+        choices.append(Choice(
+            title="Oh My Zsh + FiraCode Nerd Font (macOS)",
+            value=("shell", "macos"),
+            checked=False
+        ))
+    elif IS_LINUX:
+        choices.append(Choice(
+            title="Oh My Bash + FiraCode Nerd Font (Linux)",
+            value=("shell", "linux"),
+            checked=False
+        ))
+    
     selected = questionary.checkbox(
         "Select tools to install (Space to toggle, Enter to confirm):",
         choices=choices,
@@ -368,6 +389,7 @@ def select_tools(persona_id=None):
     # Parse selections
     selected_tools = {}
     selected_extensions = []
+    setup_shell = False
     
     for item in selected:
         if item[0] == "tool":
@@ -377,8 +399,10 @@ def select_tools(persona_id=None):
             selected_tools[category].append(tool_id)
         elif item[0] == "extension":
             selected_extensions.append(item[1])
+        elif item[0] == "shell":
+            setup_shell = True
     
-    return selected_tools, selected_extensions
+    return selected_tools, selected_extensions, setup_shell
 
 
 def install_windows_tools(selected_tools):
@@ -761,19 +785,14 @@ def setup_macos_shell():
 
 
 def setup_linux_shell():
-    """Setup Oh My Zsh and fonts on Linux"""
+    """Setup Oh My Bash and fonts on Linux"""
     print_header("Setting Up Linux Shell Enhancements")
     
-    # Install zsh if not present
-    if not check_command_exists("zsh"):
-        print("📦 Installing Zsh...")
-        run_command(["sudo", "apt", "install", "-y", "zsh"], check=False)
-    
-    # Install Oh My Zsh
-    if not Path.home().joinpath(".oh-my-zsh").exists():
-        print("📦 Installing Oh My Zsh...")
+    # Install Oh My Bash (bash-based alternative to Oh My Zsh)
+    if not Path.home().joinpath(".oh-my-bash").exists():
+        print("📦 Installing Oh My Bash...")
         run_command(
-            'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended',
+            'bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)" --unattended',
             shell=True,
             check=False
         )
@@ -789,15 +808,10 @@ def setup_linux_shell():
     )
     run_command(["fc-cache", "-fv"], check=False)
     
-    # Set zsh as default shell
-    print("📦 Setting Zsh as default shell...")
-    zsh_path = subprocess.run(["which", "zsh"], capture_output=True, text=True).stdout.strip()
-    if zsh_path:
-        run_command(["chsh", "-s", zsh_path], check=False)
-    
-    print("\n⚠️  MANUAL STEP REQUIRED:")
+    print("\n✅ Shell enhancements installed!")
+    print("⚠️  MANUAL STEP REQUIRED:")
     print("    Set your Terminal font to 'FiraCode Nerd Font'")
-    print("    Log out and log back in for shell changes to take effect")
+    print("    Restart your terminal to see the changes")
 
 
 def main():
@@ -817,9 +831,9 @@ def main():
 
         while True:
             # Interactive tool selection with persona pre-selection
-            selected_tools, selected_extensions = select_tools(persona_id)
+            selected_tools, selected_extensions, setup_shell = select_tools(persona_id)
 
-            if not selected_tools and not selected_extensions:
+            if not selected_tools and not selected_extensions and not setup_shell:
                 print("\n✓ No tools selected. Exiting.")
                 return
 
@@ -830,13 +844,16 @@ def main():
                 # Install tools
                 if IS_WINDOWS:
                     install_windows_tools(selected_tools)
-                    setup_windows_shell()
+                    if setup_shell:
+                        setup_windows_shell()
                 elif IS_MACOS:
                     install_macos_tools(selected_tools)
-                    setup_macos_shell()
+                    if setup_shell:
+                        setup_macos_shell()
                 elif IS_LINUX:
                     install_linux_tools(selected_tools)
-                    setup_linux_shell()
+                    if setup_shell:
+                        setup_linux_shell()
 
                 # Install VS Code extensions
                 if selected_extensions:
