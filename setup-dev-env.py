@@ -481,6 +481,38 @@ def install_vscode_extensions(selected_extensions):
             print(f"   ✅ {ext_label} installed")
 
 
+def confirm_selection(persona_id, selected_tools, selected_extensions):
+    """Confirm selections and allow backward navigation"""
+    print_header("Review Selection")
+
+    persona_label = PERSONAS.get(persona_id, {}).get("label", persona_id or "Custom")
+    tool_count = sum(len(v) for v in selected_tools.values()) if selected_tools else 0
+    ext_count = len(selected_extensions) if selected_extensions else 0
+
+    print(f"Persona: {persona_label}")
+    print(f"Tools selected: {tool_count}")
+    print(f"Extensions selected: {ext_count}\n")
+
+    action = questionary.select(
+        "Proceed or go back?",
+        choices=[
+            Choice(title="Proceed with installation", value="install"),
+            Choice(title="Change tools", value="tools"),
+            Choice(title="Change persona", value="persona"),
+            Choice(title="Cancel", value="cancel"),
+        ],
+        style=questionary.Style([
+            ('question', 'fg:cyan bold'),
+            ('selected', 'fg:green bold'),
+            ('highlighted', 'fg:cyan bold'),
+        ])
+    ).ask()
+
+    if action is None:
+        return "cancel"
+    return action
+
+
 def install_copilot_cli():
     """Install GitHub Copilot CLI"""
     print_header("Installing GitHub Copilot CLI")
@@ -583,34 +615,51 @@ def main():
         print("❌ Unsupported platform. This script only supports Windows and macOS.")
         sys.exit(1)
     
-    # Select persona first
-    persona_id = select_persona()
-    
-    # Interactive tool selection with persona pre-selection
-    selected_tools, selected_extensions = select_tools(persona_id)
-    
-    if not selected_tools and not selected_extensions:
-        print("\n✓ No tools selected. Exiting.")
-        return
-    
-    # Install tools
-    if IS_WINDOWS:
-        install_windows_tools(selected_tools)
-        setup_windows_shell()
-    elif IS_MACOS:
-        install_macos_tools(selected_tools)
-        setup_macos_shell()
-    
-    # Install VS Code extensions
-    if selected_extensions:
-        install_vscode_extensions(selected_extensions)
-    
-    # Install Copilot CLI
-    install_copilot_cli()
-    
-    print_header("Installation Complete!")
-    print("✅ All selected tools have been installed.")
-    print("⚠️  You may need to restart your terminal for PATH changes to take effect.\n")
+    # Backward navigation loop: persona -> tools -> confirm -> install
+    while True:
+        # Select persona first
+        persona_id = select_persona()
+
+        while True:
+            # Interactive tool selection with persona pre-selection
+            selected_tools, selected_extensions = select_tools(persona_id)
+
+            if not selected_tools and not selected_extensions:
+                print("\n✓ No tools selected. Exiting.")
+                return
+
+            # Confirm or go back
+            action = confirm_selection(persona_id, selected_tools, selected_extensions)
+
+            if action == "install":
+                # Install tools
+                if IS_WINDOWS:
+                    install_windows_tools(selected_tools)
+                    setup_windows_shell()
+                elif IS_MACOS:
+                    install_macos_tools(selected_tools)
+                    setup_macos_shell()
+
+                # Install VS Code extensions
+                if selected_extensions:
+                    install_vscode_extensions(selected_extensions)
+
+                # Install Copilot CLI
+                install_copilot_cli()
+
+                print_header("Installation Complete!")
+                print("✅ All selected tools have been installed.")
+                print("⚠️  You may need to restart your terminal for PATH changes to take effect.\n")
+                return
+            elif action == "tools":
+                # Re-open tool selection with current persona
+                continue
+            elif action == "persona":
+                # Go back to persona selection
+                break
+            elif action == "cancel":
+                print("\nInstallation cancelled.")
+                return
 
 
 if __name__ == "__main__":
