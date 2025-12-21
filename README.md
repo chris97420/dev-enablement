@@ -202,10 +202,10 @@ python run_tests.py
 
 # Or directly with pytest
 # Run all tests with coverage
-pytest test_setup_dev_env.py -v --cov=. --cov-report=term
+pytest test_setup_dev_env.py -v --cov=setup-dev-env.py --cov-report=term
 
 # Run tests with HTML coverage report
-pytest test_setup_dev_env.py -v --cov=. --cov-report=html
+pytest test_setup_dev_env.py -v --cov=setup-dev-env.py --cov-report=html
 
 # Run a specific test class
 pytest test_setup_dev_env.py::TestPersonasConfiguration -v

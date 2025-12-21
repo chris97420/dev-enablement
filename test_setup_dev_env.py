@@ -385,7 +385,7 @@ class TestInstallVSCodeExtensions:
         selected_extensions = ["GitHub.copilot"]
         setup_dev_env.install_vscode_extensions(selected_extensions)
         
-        # Should exit early without installing
+        # Should exit early without installing - no error should occur
 
 
 class TestInstallCopilotCLI:

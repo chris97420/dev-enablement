@@ -27,7 +27,7 @@ def main():
     args = [
         "test_setup_dev_env.py",
         "-v",
-        "--cov=.",
+        "--cov=setup-dev-env.py",
         "--cov-report=term-missing",
         "--cov-report=html",
         "--tb=short"
