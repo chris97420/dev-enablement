@@ -31,9 +31,14 @@ A **cross-platform, persona-driven developer environment setup** for **Windows 1
 ## 🚀 Quick Start
 
 ### Windows 11
-**One command in PowerShell:**
+**One command in PowerShell (robust):**
 ```powershell
-iwr -useb "https://raw.githubusercontent.com/chris97420/dev-setup/main/bootstrap.ps1" | iex
+iex (iwr -useb "https://raw.githubusercontent.com/chris97420/dev-setup/main/bootstrap.ps1").Content
+```
+
+If you see an error mentioning `Invoke-Expression` and `Path`, use this alternative:
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -Command "iex (iwr -useb 'https://raw.githubusercontent.com/chris97420/dev-setup/main/bootstrap.ps1').Content"
 ```
 
 Or if cloned:
