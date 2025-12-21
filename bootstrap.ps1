@@ -115,9 +115,25 @@ Write-Host ""
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $mainScript = Join-Path $scriptDir "setup-dev-env.py"
 
+# If the main script is not found locally (e.g., running via iwr | iex), download from GitHub and run
 if (Test-Path $mainScript) {
     python $mainScript
 } else {
-    Write-Host "❌ Could not find setup-dev-env.py" -ForegroundColor Red
-    exit 1
+    Write-Host "❗ setup-dev-env.py not found next to bootstrap. Downloading from GitHub..." -ForegroundColor Yellow
+    try {
+        $repoRawBase = "https://raw.githubusercontent.com/chris97420/dev-setup/main/"
+        $remoteMain = $repoRawBase + "setup-dev-env.py"
+        $tempMain = Join-Path $env:TEMP "setup-dev-env.py"
+        Invoke-WebRequest -Uri $remoteMain -UseBasicParsing -OutFile $tempMain
+        if (Test-Path $tempMain) {
+            Write-Host "   ✅ Downloaded setup-dev-env.py" -ForegroundColor Green
+            python $tempMain
+        } else {
+            Write-Host "   ❌ Failed to download setup-dev-env.py" -ForegroundColor Red
+            exit 1
+        }
+    } catch {
+        Write-Host "   ❌ Error downloading setup-dev-env.py: $_" -ForegroundColor Red
+        exit 1
+    }
 }

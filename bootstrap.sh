@@ -88,9 +88,19 @@ echo ""
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 MAIN_SCRIPT="$SCRIPT_DIR/setup-dev-env.py"
 
+# If the main script is not found locally (e.g., running via curl | bash), download from GitHub and run
 if [ -f "$MAIN_SCRIPT" ]; then
     python3 "$MAIN_SCRIPT"
 else
-    echo "❌ Could not find setup-dev-env.py"
-    exit 1
+    echo "❗ setup-dev-env.py not found next to bootstrap. Downloading from GitHub..."
+    REPO_RAW_BASE="https://raw.githubusercontent.com/chris97420/dev-setup/main/"
+    REMOTE_MAIN="${REPO_RAW_BASE}setup-dev-env.py"
+    TEMP_MAIN="/tmp/setup-dev-env.py"
+    if curl -fsSL "$REMOTE_MAIN" -o "$TEMP_MAIN"; then
+        echo "   ✅ Downloaded setup-dev-env.py"
+        python3 "$TEMP_MAIN"
+    else
+        echo "   ❌ Failed to download setup-dev-env.py"
+        exit 1
+    fi
 fi
