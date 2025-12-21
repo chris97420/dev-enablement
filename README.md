@@ -1,6 +1,6 @@
 # Portable Developer Environment Setup Script
 
-A **cross-platform, persona-driven developer environment setup** for **Windows 11** and **macOS**. Works on brand new machines with zero prerequisites!
+A **cross-platform, persona-driven developer environment setup** for **Windows 11**, **macOS**, and **Linux**. Works on brand new machines with zero prerequisites!
 
 ## ✨ Features
 
@@ -56,6 +56,19 @@ Or if cloned:
 ```bash
 chmod +x bootstrap.sh && ./bootstrap.sh
 ```
+
+### Linux (Debian/Ubuntu)
+**One command in Terminal:**
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/chris97420/dev-setup/main/bootstrap.sh)
+```
+
+Or if cloned:
+```bash
+chmod +x bootstrap.sh && ./bootstrap.sh
+```
+
+**Note:** Some installations require sudo privileges. You may be prompted for your password.
 
 ### What Happens:
 1. Installs Python 3, pip, and dependencies
@@ -139,7 +152,7 @@ Extensions installed based on your persona:
 - [Terminal-Icons](https://github.com/devblackops/Terminal-Icons) - Colorful file icons
 - **Action Required:** Set font to **Cascadia Mono PL** or **FiraCode NF**
 
-### macOS:
+### macOS & Linux:
 - [Oh My Zsh](https://ohmyz.sh/) - Zsh themes & plugins
 - FiraCode Nerd Font installed
 - **Action Required:** Set font to **FiraCode Nerd Font**
@@ -151,6 +164,7 @@ Extensions installed based on your persona:
 
 - **Windows:** [winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/) package manager
 - **macOS:** [Homebrew](https://brew.sh/) package manager
+- **Linux:** [apt](https://wiki.debian.org/Apt) and [snap](https://snapcraft.io/) package managers
 - **Extensions:** VS Code `code` CLI
 - **Copilot CLI:** npm global install
 
@@ -161,9 +175,15 @@ Extensions installed based on your persona:
 **Bootstrap Issues:**
 - Windows: May need Administrator privileges
 - macOS: May need sudo for Homebrew install
+- Linux: Requires sudo privileges for apt/snap installations
 
 **winget not found:**
 - Install from Microsoft Store or https://aka.ms/getwinget
+
+**Linux specific:**
+- Script supports Debian/Ubuntu-based distributions
+- Some packages may require additional repositories (automatically configured)
+- For other distributions, adapt package names in `TOOL_CONFIG`
 
 **PATH issues:**
 - Restart terminal after installation
