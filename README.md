@@ -33,12 +33,12 @@ A **cross-platform, persona-driven developer environment setup** for **Windows 1
 ### Windows 11
 **One command in PowerShell (robust):**
 ```powershell
-iex (iwr -useb "https://raw.githubusercontent.com/chris97420/dev-setup/main/bootstrap.ps1").Content
+iex (iwr -useb "https://raw.githubusercontent.com/chris97420/dev-enablement/main/bootstrap.ps1").Content
 ```
 
 If you see an error mentioning `Invoke-Expression` and `Path`, use this alternative:
 ```powershell
-pwsh -NoProfile -ExecutionPolicy Bypass -Command "iex (iwr -useb 'https://raw.githubusercontent.com/chris97420/dev-setup/main/bootstrap.ps1').Content"
+pwsh -NoProfile -ExecutionPolicy Bypass -Command "iex (iwr -useb 'https://raw.githubusercontent.com/chris97420/dev-enablement/main/bootstrap.ps1').Content"
 ```
 
 Or if cloned:
@@ -49,7 +49,7 @@ Or if cloned:
 ### macOS
 **One command in Terminal:**
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/chris97420/dev-setup/main/bootstrap.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/chris97420/dev-enablement/main/bootstrap.sh)
 ```
 
 Or if cloned:
@@ -60,7 +60,7 @@ chmod +x bootstrap.sh && ./bootstrap.sh
 ### Linux (Debian/Ubuntu)
 **One command in Terminal:**
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/chris97420/dev-setup/main/bootstrap.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/chris97420/dev-enablement/main/bootstrap.sh)
 ```
 
 Or if cloned:

@@ -144,14 +144,30 @@ if [ -f "$MAIN_SCRIPT" ]; then
     python3 "$MAIN_SCRIPT"
 else
     echo "❗ setup-dev-env.py not found next to bootstrap. Downloading from GitHub..."
-    REPO_RAW_BASE="https://raw.githubusercontent.com/chris97420/dev-setup/main/"
-    REMOTE_MAIN="${REPO_RAW_BASE}setup-dev-env.py"
-    TEMP_MAIN="/tmp/setup-dev-env.py"
-    if curl -fsSL "$REMOTE_MAIN" -o "$TEMP_MAIN"; then
+    REPO_RAW_BASE="https://raw.githubusercontent.com/chris97420/dev-enablement/main/"
+    TEMP_DIR="/tmp/dev-enablement-setup"
+    TEMP_CONFIG_DIR="$TEMP_DIR/config"
+    
+    # Create temp directories
+    mkdir -p "$TEMP_CONFIG_DIR"
+    
+    # Download main script
+    TEMP_MAIN="$TEMP_DIR/setup-dev-env.py"
+    if curl -fsSL "${REPO_RAW_BASE}setup-dev-env.py" -o "$TEMP_MAIN"; then
         echo "   ✅ Downloaded setup-dev-env.py"
-        python3 "$TEMP_MAIN"
     else
         echo "   ❌ Failed to download setup-dev-env.py"
         exit 1
     fi
+    
+    # Download config files
+    for file in "personas.json" "tools.json" "extensions.json"; do
+        if curl -fsSL "${REPO_RAW_BASE}config/$file" -o "$TEMP_CONFIG_DIR/$file"; then
+            echo "   ✅ Downloaded config/$file"
+        else
+            echo "   ⚠️  Failed to download config/$file (will use defaults)"
+        fi
+    done
+    
+    python3 "$TEMP_MAIN"
 fi

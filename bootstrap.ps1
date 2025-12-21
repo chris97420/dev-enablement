@@ -121,19 +121,35 @@ if (Test-Path $mainScript) {
 } else {
     Write-Host "❗ setup-dev-env.py not found next to bootstrap. Downloading from GitHub..." -ForegroundColor Yellow
     try {
-        $repoRawBase = "https://raw.githubusercontent.com/chris97420/dev-setup/main/"
-        $remoteMain = $repoRawBase + "setup-dev-env.py"
-        $tempMain = Join-Path $env:TEMP "setup-dev-env.py"
-        Invoke-WebRequest -Uri $remoteMain -UseBasicParsing -OutFile $tempMain
+        $repoRawBase = "https://raw.githubusercontent.com/chris97420/dev-enablement/main/"
+        $tempDir = Join-Path $env:TEMP "dev-enablement-setup"
+        $tempConfigDir = Join-Path $tempDir "config"
+        
+        # Create temp directories
+        New-Item -ItemType Directory -Force -Path $tempConfigDir | Out-Null
+        
+        # Download main script
+        $tempMain = Join-Path $tempDir "setup-dev-env.py"
+        Invoke-WebRequest -Uri ($repoRawBase + "setup-dev-env.py") -UseBasicParsing -OutFile $tempMain
+        Write-Host "   ✅ Downloaded setup-dev-env.py" -ForegroundColor Green
+        
+        # Download config files
+        $configFiles = @("personas.json", "tools.json", "extensions.json")
+        foreach ($file in $configFiles) {
+            $configUrl = $repoRawBase + "config/" + $file
+            $configPath = Join-Path $tempConfigDir $file
+            Invoke-WebRequest -Uri $configUrl -UseBasicParsing -OutFile $configPath
+            Write-Host "   ✅ Downloaded config/$file" -ForegroundColor Green
+        }
+        
         if (Test-Path $tempMain) {
-            Write-Host "   ✅ Downloaded setup-dev-env.py" -ForegroundColor Green
             python $tempMain
         } else {
             Write-Host "   ❌ Failed to download setup-dev-env.py" -ForegroundColor Red
             exit 1
         }
     } catch {
-        Write-Host "   ❌ Error downloading setup-dev-env.py: $_" -ForegroundColor Red
+        Write-Host "   ❌ Error downloading files: $_" -ForegroundColor Red
         exit 1
     }
 }
