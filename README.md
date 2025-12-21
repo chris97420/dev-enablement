@@ -182,6 +182,50 @@ Add new entries to `PERSONAS` dictionary with custom toolsets
 
 ---
 
+---
+
+## 🧪 Testing
+
+### Running Tests
+
+This project includes a comprehensive test suite to ensure reliability across platforms.
+
+**Install test dependencies:**
+```bash
+pip install -r requirements-test.txt
+```
+
+**Run tests:**
+```bash
+# Run all tests with coverage
+pytest test_setup_dev_env.py -v --cov=. --cov-report=term
+
+# Run tests with HTML coverage report
+pytest test_setup_dev_env.py -v --cov=. --cov-report=html
+
+# Run a specific test class
+pytest test_setup_dev_env.py::TestPersonasConfiguration -v
+
+# Run a specific test
+pytest test_setup_dev_env.py::TestPersonasConfiguration::test_dotnet_persona -v
+```
+
+**Test Coverage:**
+The test suite covers:
+- ✅ Utility functions (command checking, command execution)
+- ✅ Configuration validation (personas, tools, extensions)
+- ✅ Tool selection and confirmation logic
+- ✅ Platform-specific installation functions (mocked)
+- ✅ Shell enhancement setup
+- ✅ Data integrity checks
+
+**Continuous Integration:**
+Tests run automatically on push/PR via GitHub Actions across:
+- **Platforms:** Ubuntu, Windows, macOS
+- **Python versions:** 3.8, 3.9, 3.10, 3.11, 3.12
+
+---
+
 ## ⚙️ Requirements
 
 **None for bootstrap!** 
