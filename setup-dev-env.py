@@ -182,7 +182,7 @@ VSCODE_EXTENSIONS = {
     
     # Azure
     "ms-azuretools.vscode-azurefunctions": "Azure Functions",
-    "ms-vscode.azure-account": "Azure Account",
+    "ms-azuretools.vscode-azureresourcegroups": "Azure Resources",
     
     # JavaScript/TypeScript
     "dbaeumer.vscode-eslint": "ESLint",
