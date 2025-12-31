@@ -43,6 +43,12 @@
       "mac_pkg": "visual-studio-code",
       "type": "cask",
       "linux_pkg": "code"
+    },
+    "Microsoft.PowerShell": {
+      "label": "PowerShell 7+",
+      "mac_pkg": "powershell",
+      "type": "cask",
+      "linux_pkg": "powershell"
     }
   },
   "API & Testing": {

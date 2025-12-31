@@ -20,6 +20,23 @@ Write-Host "  Developer Environment Bootstrap (Windows)" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 Write-Host ""
 
+# Check PowerShell version
+$psVersion = $PSVersionTable.PSVersion
+Write-Host "PowerShell Version: $($psVersion.Major).$($psVersion.Minor)" -ForegroundColor Cyan
+if ($psVersion.Major -lt 5) {
+    Write-Host "⚠️  Warning: This script requires PowerShell 5.0 or higher." -ForegroundColor Red
+    Write-Host "   Your version: $($psVersion.Major).$($psVersion.Minor)" -ForegroundColor Red
+    Write-Host "   Please upgrade PowerShell and try again." -ForegroundColor Yellow
+    exit 1
+}
+
+# Recommend PowerShell Core for best experience
+if ($psVersion.Major -eq 5) {
+    Write-Host "💡 Tip: You're using Windows PowerShell. For the best experience, consider upgrading to PowerShell 7+" -ForegroundColor Yellow
+    Write-Host "   This script will install PowerShell 7 as part of the setup if you select it." -ForegroundColor Yellow
+    Write-Host ""
+}
+
 # Check if running as Administrator
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if (-not $isAdmin) {
