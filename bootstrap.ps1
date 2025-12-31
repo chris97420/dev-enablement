@@ -20,6 +20,23 @@ Write-Host "  Developer Environment Bootstrap (Windows)" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 Write-Host ""
 
+# Check PowerShell version
+$psVersion = $PSVersionTable.PSVersion
+Write-Host "PowerShell Version: $($psVersion.Major).$($psVersion.Minor)" -ForegroundColor Cyan
+if ($psVersion.Major -lt 5) {
+    Write-Host "⚠️  Warning: This script requires PowerShell 5.0 or higher." -ForegroundColor Red
+    Write-Host "   Your version: $($psVersion.Major).$($psVersion.Minor)" -ForegroundColor Red
+    Write-Host "   Please upgrade PowerShell and try again." -ForegroundColor Yellow
+    exit 1
+}
+
+# Recommend PowerShell Core for best experience
+if ($psVersion.Major -eq 5) {
+    Write-Host "💡 Tip: You're using Windows PowerShell. For the best experience, consider upgrading to PowerShell 7+" -ForegroundColor Yellow
+    Write-Host "   This script will install PowerShell 7 as part of the setup if you select it." -ForegroundColor Yellow
+    Write-Host ""
+}
+
 # Check if running as Administrator
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if (-not $isAdmin) {
@@ -27,10 +44,29 @@ if (-not $isAdmin) {
     Write-Host ""
 }
 
-# Function to check if a command exists
+# Function to check if a command exists and works
 function Test-Command {
     param($Command)
     $null -ne (Get-Command $Command -ErrorAction SilentlyContinue)
+}
+
+# Function to check if Python is actually installed (not just the Microsoft Store stub)
+function Test-PythonInstalled {
+    # Try to run python --version and check if it succeeds
+    try {
+        $output = python --version 2>&1
+        # Check if the output contains "Python was not found" or "from the Microsoft Store"
+        if ($output -match "Python was not found" -or $output -match "from the Microsoft Store") {
+            return $false
+        }
+        # Check if we got a valid version output (e.g., Python 3.12.0)
+        if ($output -match "Python \d+\.\d+\.\d+") {
+            return $true
+        }
+        return $false
+    } catch {
+        return $false
+    }
 }
 
 # Step 1: Check/Install winget
@@ -54,7 +90,9 @@ if (-not (Test-Command "winget")) {
 # Step 2: Check/Install Python 3
 Write-Host ""
 Write-Host "🐍 Checking for Python 3..." -ForegroundColor Green
-if (-not (Test-Command "python")) {
+
+# Check if Python is actually installed (not just the Microsoft Store stub)
+if (-not (Test-PythonInstalled)) {
     Write-Host "   Installing Python 3.12..." -ForegroundColor Yellow
     try {
         winget install --id Python.Python.3.12 --source winget --silent --accept-source-agreements --accept-package-agreements
@@ -63,9 +101,14 @@ if (-not (Test-Command "python")) {
         # Refresh environment variables
         $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
         
+        # Wait a moment for the PATH to update
+        Start-Sleep -Seconds 2
+        
         # Verify installation
-        if (-not (Test-Command "python")) {
-            Write-Host "   ⚠️  Python installed but not in PATH. Please restart your terminal." -ForegroundColor Yellow
+        if (-not (Test-PythonInstalled)) {
+            Write-Host "   ⚠️  Python installed but not working yet." -ForegroundColor Yellow
+            Write-Host "   This can happen if PATH hasn't updated or installation is incomplete." -ForegroundColor Yellow
+            Write-Host "   Please restart your terminal and verify by running: python --version" -ForegroundColor Yellow
             exit 1
         }
     } catch {
@@ -73,9 +116,14 @@ if (-not (Test-Command "python")) {
         Write-Host "   Error: $_" -ForegroundColor Red
         exit 1
     }
-} else {
+}
+
+# Display Python version
+try {
     $pythonVersion = python --version 2>&1
     Write-Host "   ✓ Python is available: $pythonVersion" -ForegroundColor Green
+} catch {
+    Write-Host "   ⚠️  Python command exists but version check failed" -ForegroundColor Yellow
 }
 
 # Step 3: Ensure pip is available and up-to-date

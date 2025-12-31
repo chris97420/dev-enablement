@@ -6,7 +6,9 @@ A **cross-platform, persona-driven developer environment setup** for **Windows 1
 
 **✅ Bootstrap Support:**
 - Works on completely fresh machines
-- Automatically installs Python and all dependencies
+- Automatically detects and installs Python (handles Windows Microsoft Store stub)
+- PowerShell 5.0+ support (works with both Windows PowerShell and PowerShell 7+)
+- Automatically installs all dependencies
 - Single command to get started
 
 **👤 Developer Personas:**
@@ -18,7 +20,7 @@ A **cross-platform, persona-driven developer environment setup** for **Windows 1
 - **Custom Selection** - Manually choose your tools
 
 **🛠️ Tools Included:**
-- **Core:** Git, Node.js, Python, .NET SDK, GitHub CLI, GitHub Copilot CLI, VS Code
+- **Core:** Git, Node.js, Python, .NET SDK, GitHub CLI, GitHub Copilot CLI, VS Code, PowerShell 7+
 - **API & Testing:** Postman, Insomnia, Fiddler
 - **Cloud:** Azure CLI, Azure Functions, AWS CLI, Google Cloud SDK, Docker, Terraform, Kubectl
 - **Databases:** DBeaver, MongoDB Compass, SQL Server Management Studio (Windows)
@@ -188,6 +190,16 @@ During setup, you can optionally select shell enhancements for your terminal:
 - Windows: May need Administrator privileges
 - macOS: May need sudo for Homebrew install
 - Linux: Requires sudo privileges for apt/snap installations
+
+**Python not found (Windows):**
+- The script automatically detects and installs Python if the Microsoft Store stub is present
+- If you see "Python was not found", the bootstrap script will install Python 3.12 via winget
+- After installation, you may need to restart your terminal
+
+**PowerShell Version:**
+- Requires PowerShell 5.0 or higher
+- Windows PowerShell 5.1 works, but PowerShell 7+ is recommended for best experience
+- PowerShell 7+ can be installed as one of the optional tools during setup
 
 **winget not found:**
 - Install from Microsoft Store or https://aka.ms/getwinget
