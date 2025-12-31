@@ -27,10 +27,29 @@ if (-not $isAdmin) {
     Write-Host ""
 }
 
-# Function to check if a command exists
+# Function to check if a command exists and works
 function Test-Command {
     param($Command)
     $null -ne (Get-Command $Command -ErrorAction SilentlyContinue)
+}
+
+# Function to check if Python is actually installed (not just the Microsoft Store stub)
+function Test-PythonInstalled {
+    # Try to run python --version and check if it succeeds
+    try {
+        $output = python --version 2>&1
+        # Check if the output contains "Python was not found" (Microsoft Store stub)
+        if ($output -match "Python was not found" -or $output -match "Microsoft Store") {
+            return $false
+        }
+        # Check if we got a valid version output
+        if ($output -match "Python \d+\.\d+") {
+            return $true
+        }
+        return $false
+    } catch {
+        return $false
+    }
 }
 
 # Step 1: Check/Install winget
@@ -54,7 +73,9 @@ if (-not (Test-Command "winget")) {
 # Step 2: Check/Install Python 3
 Write-Host ""
 Write-Host "🐍 Checking for Python 3..." -ForegroundColor Green
-if (-not (Test-Command "python")) {
+
+# Check if Python is actually installed (not just the Microsoft Store stub)
+if (-not (Test-PythonInstalled)) {
     Write-Host "   Installing Python 3.12..." -ForegroundColor Yellow
     try {
         winget install --id Python.Python.3.12 --source winget --silent --accept-source-agreements --accept-package-agreements
@@ -63,9 +84,13 @@ if (-not (Test-Command "python")) {
         # Refresh environment variables
         $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
         
+        # Wait a moment for the PATH to update
+        Start-Sleep -Seconds 2
+        
         # Verify installation
-        if (-not (Test-Command "python")) {
-            Write-Host "   ⚠️  Python installed but not in PATH. Please restart your terminal." -ForegroundColor Yellow
+        if (-not (Test-PythonInstalled)) {
+            Write-Host "   ⚠️  Python installed but not working yet. Please restart your terminal." -ForegroundColor Yellow
+            Write-Host "   You can manually verify by running: python --version" -ForegroundColor Yellow
             exit 1
         }
     } catch {
@@ -73,9 +98,14 @@ if (-not (Test-Command "python")) {
         Write-Host "   Error: $_" -ForegroundColor Red
         exit 1
     }
-} else {
+}
+
+# Display Python version
+try {
     $pythonVersion = python --version 2>&1
     Write-Host "   ✓ Python is available: $pythonVersion" -ForegroundColor Green
+} catch {
+    Write-Host "   ⚠️  Python command exists but version check failed" -ForegroundColor Yellow
 }
 
 # Step 3: Ensure pip is available and up-to-date
