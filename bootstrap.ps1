@@ -55,12 +55,12 @@ function Test-PythonInstalled {
     # Try to run python --version and check if it succeeds
     try {
         $output = python --version 2>&1
-        # Check if the output contains "Python was not found" (Microsoft Store stub)
-        if ($output -match "Python was not found" -or $output -match "Microsoft Store") {
+        # Check if the output contains "Python was not found" or "from the Microsoft Store"
+        if ($output -match "Python was not found" -or $output -match "from the Microsoft Store") {
             return $false
         }
-        # Check if we got a valid version output
-        if ($output -match "Python \d+\.\d+") {
+        # Check if we got a valid version output (e.g., Python 3.12.0)
+        if ($output -match "Python \d+\.\d+\.\d+") {
             return $true
         }
         return $false
@@ -106,8 +106,9 @@ if (-not (Test-PythonInstalled)) {
         
         # Verify installation
         if (-not (Test-PythonInstalled)) {
-            Write-Host "   ⚠️  Python installed but not working yet. Please restart your terminal." -ForegroundColor Yellow
-            Write-Host "   You can manually verify by running: python --version" -ForegroundColor Yellow
+            Write-Host "   ⚠️  Python installed but not working yet." -ForegroundColor Yellow
+            Write-Host "   This can happen if PATH hasn't updated or installation is incomplete." -ForegroundColor Yellow
+            Write-Host "   Please restart your terminal and verify by running: python --version" -ForegroundColor Yellow
             exit 1
         }
     } catch {
